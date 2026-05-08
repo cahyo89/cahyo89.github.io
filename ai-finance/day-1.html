@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Fundamentals & Structured Thinking in Finance — Day 1 (60 Slides)</title>
+  <style>
+    :root{
+      --bg:#0b1020; --card:#111a33; --text:#e9eefc; --muted:#b7c2e6;
+      --accent:#6aa6ff; --accent2:#7cf0d6; --danger:#ff6a8a;
+      --border:rgba(255,255,255,.12);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; background:var(--bg); color:var(--text)}
+    .app{min-height:100vh; display:flex; flex-direction:column}
+    header{padding:14px 18px; border-bottom:1px solid var(--border); display:flex; gap:12px; align-items:center; justify-content:space-between}
+    header .title{font-weight:650; letter-spacing:.2px}
+    header .meta{color:var(--muted); font-size:13px}
+
+    .stage{flex:1; display:flex; justify-content:center; padding:18px}
+    .slide{
+      width:min(1100px, 100%);
+      min-height:calc(100vh - 140px);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:28px 30px;
+      box-shadow:0 18px 45px rgba(0,0,0,.35);
+      position:relative;
+      overflow:hidden;
+    }
+    .slide:before{
+      content:"";
+      position:absolute; inset:-120px -120px auto auto;
+      width:260px; height:260px;
+      background:radial-gradient(circle at 30% 30%, rgba(106,166,255,.45), rgba(0,0,0,0));
+      transform:rotate(18deg);
+      pointer-events:none;
+    }
+    .kicker{color:var(--accent2); font-weight:700; font-size:13px; letter-spacing:.18em; text-transform:uppercase}
+    h1{margin:10px 0 10px; font-size:40px; line-height:1.1}
+    h2{margin:8px 0 10px; font-size:30px; line-height:1.15}
+    h3{margin:10px 0 8px; font-size:20px}
+    p{margin:10px 0; color:var(--text); font-size:18px; line-height:1.5}
+    .muted{color:var(--muted)}
+    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:14px}
+    .box{border:1px solid var(--border); border-radius:14px; padding:14px 14px; background:rgba(0,0,0,.18)}
+    .box h4{margin:0 0 8px; font-size:15px; color:var(--accent)}
+    .box p{margin:0; font-size:16px; color:var(--muted)}
+    ul{margin:10px 0 0 0; padding-left:22px}
+    li{margin:8px 0; font-size:18px; line-height:1.45; color:var(--text)}
+    .tagrow{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+    .tag{border:1px solid var(--border); color:var(--muted); padding:6px 10px; border-radius:999px; font-size:13px}
+
+    footer{padding:12px 18px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:12px}
+    .controls{display:flex; gap:10px; align-items:center}
+    button{
+      background:rgba(255,255,255,.08);
+      border:1px solid var(--border);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:600;
+    }
+    button:hover{background:rgba(255,255,255,.12)}
+    button:disabled{opacity:.45; cursor:not-allowed}
+    .pill{color:var(--muted); font-size:13px; border:1px solid var(--border); padding:7px 10px; border-radius:999px}
+    .progress{height:8px; width:240px; background:rgba(255,255,255,.08); border:1px solid var(--border); border-radius:999px; overflow:hidden}
+    .bar{height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--accent2))}
+
+    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; font-size:12px; color:var(--muted); border:1px solid var(--border); padding:3px 7px; border-radius:8px}
+
+    @media (max-width: 820px){
+      h1{font-size:32px}
+      h2{font-size:24px}
+      p, li{font-size:16px}
+      .grid2{grid-template-columns:1fr}
+      .progress{width:160px}
+      .slide{padding:22px 18px; border-radius:16px}
+    }
+    @media print{
+      body{background:#fff; color:#000}
+      header, footer{display:none}
+      .stage{padding:0}
+      .slide{min-height:auto; box-shadow:none; border:none; border-radius:0}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <div class="title">AI Fundamentals & Structured Thinking in Finance — Day 1</div>
+        <div class="meta">Deck 60 slide (gabungan dua materi) • Navigasi: <span class="kbd">←</span>/<span class="kbd">→</span> atau <span class="kbd">Space</span></div>
+      </div>
+      <div class="pill" id="slideCounter">Slide 1 / 60</div>
+    </header>
+
+    <main class="stage">
+      <section class="slide" id="slide"></section>
+    </main>
+
+    <footer>
+      <div class="controls">
+        <button id="prevBtn">Prev</button>
+        <button id="nextBtn">Next</button>
+        <button id="overviewBtn" title="Tampilkan daftar judul slide">Overview</button>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="progress" aria-label="Progress">
+          <div class="bar" id="bar"></div>
+        </div>
+        <div class="pill" id="hint">Tip: tekan <span class="kbd">O</span> untuk Overview</div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Deck 60 slide (gabungan dua materi Day 1)
+    // Struktur tiap slide: { title: string, html: string }
+    const slides = [
+      {
+        title: "Judul",
+        html: `
+          <div class="kicker">Workshop Day 1</div>
+          <h1>AI Fundamentals & Structured Thinking<br/>in Finance</h1>
+          <p class="muted">Deck komprehensif (60 slide) untuk profesional finance: dasar AI/LLM, aplikasi di industri, kerangka berpikir terstruktur, data literacy, prompt engineering, latihan, dan safety rules.</p>
+          <div class="tagrow">
+            <span class="tag">AI sebagai co-pilot</span>
+            <span class="tag">Structured thinking</span>
+            <span class="tag">Data quality</span>
+            <span class="tag">Prompting</span>
+          </div>
+        `
+      },
+      {
+        title: "Tujuan pembelajaran",
+        html: `
+          <div class="kicker">Tujuan</div>
+          <h2>Hasil yang diharapkan setelah Day 1</h2>
+          <ul>
+            <li>Memahami konsep dasar AI (khususnya Generative AI/LLM) dan batasannya dalam konteks kerja finance.</li>
+            <li>Menggunakan AI untuk membantu drafting, merangkum, menstrukturkan analisis, dan mempercepat pekerjaan—tanpa menjadikannya pengambil keputusan.</li>
+            <li>Menerapkan kerangka berpikir terstruktur (MECE, issue tree, first principles, 5 Whys) saat memecah masalah finansial.</li>
+            <li>Membangun kebiasaan verifikasi, data safety, dan kontrol kualitas output AI.</li>
+          </ul>
+        `
+      },
+      {
+        title: "Agenda hari ini",
+        html: `
+          <div class="kicker">Agenda</div>
+          <h2>Rangkaian sesi Day 1</h2>
+          <div class="grid2">
+            <div class="box">
+              <h4>Blok 1 — Fondasi</h4>
+              <p>AI fundamentals untuk finance, bagaimana LLM bekerja (versi sederhana), mengapa AI bisa salah (hallucination).</p>
+            </div>
+            <div class="box">
+              <h4>Blok 2 — Penerapan</h4>
+              <p>Jenis AI & use cases di finance, structured thinking, data literacy & data quality.</p>
+            </div>
+            <div class="box">
+              <h4>Blok 3 — Skill praktis</h4>
+              <p>Prompt engineering untuk analisis finansial, latihan 3 light tasks, scenario prompts & diskusi.</p>
+            </div>
+            <div class="box">
+              <h4>Blok 4 — Guardrails</h4>
+              <p>Aturan data & safety, verifikasi output, wrap-up & persiapan Day 2.</p>
+            </div>
+          </div>
+        `
+      },
+      {
+        title: "Mengapa AI relevan untuk finance",
+        html: `
+          <div class="kicker">Konteks</div>
+          <h2>Kenapa sekarang?</h2>
+          <p>Finance bekerja dengan dokumen, angka, narasi, dan keputusan yang perlu justifikasi. Generative AI kuat dalam bahasa: merangkum, mengubah struktur, membuat draft, dan membantu menyusun argumen—sehingga cocok untuk banyak pekerjaan knowledge-work di finance.</p>
+          <p class="muted">Namun: AI tidak otomatis benar. Nilai utamanya muncul saat dipasangkan dengan proses berpikir terstruktur + data yang tepat + verifikasi.</p>
+        `
+      },
+      {
+        title: "Definisi AI (ringkas)",
+        html: `
+          <div class="kicker">AI basics</div>
+          <h2>Apa itu AI?</h2>
+          <p><span class="muted">Definisi praktis:</span> AI adalah sistem yang belajar dari data untuk melakukan tugas yang biasanya membutuhkan kecerdasan manusia—seperti mengenali pola, memprediksi, mengklasifikasi, mengekstrak informasi, atau menghasilkan teks.</p>
+          <div class="grid2">
+            <div class="box"><h4>Yang sering dibutuhkan finance</h4><p>Ringkasan, drafting memo, klasifikasi transaksi, ekstraksi data dari dokumen, deteksi anomali, bantuan analisis skenario.</p></div>
+            <div class="box"><h4>Yang sering disalahpahami</h4><p>AI bukan “mesin kebenaran”. Ia bisa meyakinkan tapi salah jika konteks/data kurang.</p></div>
+          </div>
+        `
+      },
+      {
+        title: "Jenis-jenis AI (peta sederhana)",
+        html: `
+          <div class="kicker">Landscape</div>
+          <h2>Jenis AI yang sering ditemui</h2>
+          <ul>
+            <li><b>Machine Learning</b>: belajar pola dari data untuk prediksi/klasifikasi (contoh: credit scoring, churn, fraud).</li>
+            <li><b>NLP</b> (Natural Language Processing): memahami/mengekstrak teks (contoh: klasifikasi dokumen, entity extraction, sentiment).</li>
+            <li><b>Generative AI</b>: menghasilkan konten baru (teks/gambar) berdasarkan pola data (contoh: drafting laporan, Q&A dokumen kebijakan).</li>
+          </ul>
+          <p class="muted">Day 1 fokus terutama pada Generative AI/LLM + cara memakainya secara aman.</p>
+        `
+      },
+      {
+        title: "LLM itu apa",
+        html: `
+          <div class="kicker">Generative AI</div>
+          <h2>Large Language Model (LLM)</h2>
+          <p>LLM adalah model bahasa berukuran besar yang dilatih dari banyak teks, lalu mampu menghasilkan teks yang tampak “paham” karena sangat baik memprediksi kelanjutan kata/kalimat berdasarkan konteks.</p>
+          <div class="box">
+            <h4>Analogi sederhana</h4>
+            <p>Seperti auto-complete yang sangat canggih: menebak “kata berikutnya” dengan probabilitas tinggi berdasarkan pola yang pernah dilihat.</p>
+          </div>
+        `
+      },
+      {
+        title: "Cara kerja LLM (versi sederhana)",
+        html: `
+          <div class="kicker">How it works</div>
+          <h2>Kenapa LLM bisa ‘nyambung’?</h2>
+          <ul>
+            <li>Model melihat <b>konteks</b> (prompt + chat) lalu memprediksi token berikutnya.</li>
+            <li>Prediksi diulang berkali-kali sampai membentuk paragraf yang koheren.</li>
+            <li>Kualitas output sangat bergantung pada: <b>konteks</b>, <b>instruksi</b>, dan <b>contoh</b> yang Anda berikan.</li>
+          </ul>
+          <p class="muted">Implikasi penting: jika konteks salah/kurang, output bisa salah tapi tetap terdengar meyakinkan.</p>
+        `
+      },
+      {
+        title: "Mengapa AI bisa salah (hallucination)",
+        html: `
+          <div class="kicker" style="color:var(--danger)">Risiko</div>
+          <h2>Hallucination: jawaban meyakinkan tapi tidak akurat</h2>
+          <p>Karena LLM memprediksi teks, ia dapat “mengisi kekosongan” saat data kurang, menebak angka, atau membuat rujukan yang tidak ada—terutama jika diminta jawaban final tanpa sumber.</p>
+          <div class="grid2">
+            <div class="box"><h4>Penyebab umum</h4><p>Konteks kurang, pertanyaan terlalu luas, data tidak disediakan, atau prompt mendorong “jawaban pasti”.</p></div>
+            <div class="box"><h4>Mitigasi</h4><p>Minta asumsi eksplisit, minta langkah kerja, gunakan data yang Anda sediakan, verifikasi silang, dan gunakan checklist kualitas.</p></div>
+          </div>
+        `
+      },
+      {
+        title: "AI di finance: co-pilot, bukan autopilot",
+        html: `
+          <div class="kicker">Mindset</div>
+          <h2>Co-pilot, bukan Autopilot</h2>
+          <p><b>Co-pilot</b> berarti AI membantu menyusun, mempercepat, dan memperjelas—sementara Anda tetap memegang judgement, approval, dan tanggung jawab risiko.</p>
+          <ul>
+            <li>AI cocok untuk <b>drafting</b>, <b>structuring</b>, <b>summarizing</b>, dan <b>brainstorming</b>.</li>
+            <li>Keputusan finansial tetap butuh <b>validasi data</b>, <b>kontrol risiko</b>, dan <b>compliance</b>.</li>
+          </ul>
+        `
+      },
+      {
+        title: "Pekerjaan finance yang terbantu oleh AI",
+        html: `
+          <div class="kicker">Use cases</div>
+          <h2>Contoh tugas ‘high leverage’</h2>
+          <div class="grid2">
+            <div class="box"><h4>Komunikasi & dokumen</h4><p>Ringkasan report, draft email, memo investasi, penjelasan varians, narasi KPI.</p></div>
+            <div class="box"><h4>Analisis terstruktur</h4><p>Menyusun issue tree, membuat kerangka analisis, daftar pertanyaan due diligence.</p></div>
+            <div class="box"><h4>Operasional & kontrol</h4><p>Checklist review, SOP drafting, template kontrol internal, Q&A kebijakan.</p></div>
+            <div class="box"><h4>Data-to-text</h4><p>Mengubah tabel menjadi insight naratif (dengan data yang Anda berikan dan diverifikasi).</p></div>
+          </div>
+        `
+      },
+      {
+        title: "Peta aplikasi AI di industri finance",
+        html: `
+          <div class="kicker">Industry</div>
+          <h2>Di mana AI biasanya dipakai?</h2>
+          <ul>
+            <li><b>Banking</b>: fraud detection, KYC/AML screening, customer service, risk modeling.</li>
+            <li><b>Insurance</b>: underwriting support, claims triage, document extraction.</li>
+            <li><b>Asset management</b>: research summarization, monitoring berita, ideasi thesis (tetap perlu verifikasi).</li>
+            <li><b>Corporate finance</b>: forecasting support, variance narration, budgeting packs.</li>
+          </ul>
+        `
+      },
+      {
+        title: "Batasan dan risiko khas di finance",
+        html: `
+          <div class="kicker" style="color:var(--danger)">Risk lens</div>
+          <h2>Kenali batasannya sejak awal</h2>
+          <ul>
+            <li><b>Angka & kalkulasi</b>: LLM dapat salah hitung atau salah menyalin; gunakan spreadsheet/alat hitung untuk final.</li>
+            <li><b>Kepatuhan</b>: data rahasia, material non-public information, PII—harus dilindungi.</li>
+            <li><b>Bias</b>: data historis bisa membawa bias; butuh governance.</li>
+            <li><b>Explainability</b>: output harus bisa dijelaskan dan diaudit (khususnya untuk keputusan penting).</li>
+          </ul>
+        `
+      },
+      {
+        title: "Structured thinking: kenapa penting",
+        html: `
+          <div class="kicker">Structured thinking</div>
+          <h2>AI kuat bila Anda memberi struktur</h2>
+          <p>Dalam finance, masalah jarang rapi—data datang dari banyak sistem, stakeholder punya perspektif berbeda, dan keputusan punya dampak material. Kerangka berpikir terstruktur membantu Anda memecah problem menjadi bagian yang jelas, lalu memakai AI untuk mempercepat tiap bagian <b>tanpa kehilangan kontrol</b>.</p>
+          <div class="grid2">
+            <div class="box"><h4>🎯 Prinsip inti</h4><p>1) Mulai dari tujuan keputusan, 2) definisikan scope & constraint, 3) pecah jadi komponen terukur, 4) tetapkan data yang diperlukan, 5) baru minta AI membantu menyusun output.</p></div>
+            <div class="box"><h4>⚠️ Tanpa struktur?</h4><p>AI akan memberikan jawaban yang "terdengar bagus" tapi tidak sesuai konteks bisnis Anda—karena AI tidak tahu apa yang <i>tidak</i> Anda ceritakan. Struktur = cara Anda mengisi gap itu.</p></div>
+          </div>
+          <p class="muted">Analogi: structured thinking adalah <b>peta jalan</b>, AI adalah <b>kendaraan cepat</b>. Tanpa peta, kendaraan cepat justru membawa Anda makin jauh ke arah yang salah.</p>
+        `
+      },
+      {
+        title: "MECE (pengantar)",
+        html: `
+          <div class="kicker">Framework</div>
+          <h2>MECE: Mutually Exclusive, Collectively Exhaustive</h2>
+          <p>MECE membantu membuat kategori analisis yang <b>tidak tumpang tindih</b> (mutually exclusive) dan <b>mencakup semuanya</b> (collectively exhaustive) agar analisis tidak bolong dan tidak double-count.</p>
+          <div class="grid2">
+            <div class="box"><h4>✅ Contoh MECE</h4>
+              <p><b>Revenue bridge:</b> Volume × Price × Mix × FX = Total Δ Revenue</p>
+              <p><b>Cost breakdown:</b> COGS + Opex (S&M, G&A, R&D) + D&A + Interest + Tax = Total cost</p>
+              <p>Setiap rupiah masuk tepat satu kategori, tidak ada yang terlewat.</p>
+            </div>
+            <div class="box"><h4>❌ Non-MECE (hindari)</h4>
+              <p>"Revenue turun karena pelanggan pergi <i>dan</i> harga terlalu tinggi <i>dan</i> kompetitor lebih murah" → overlap antara harga & kompetitor; belum tentu exhaustive.</p>
+              <p><b>Dampak:</b> double-count atau blind spot dalam rekomendasi.</p>
+            </div>
+          </div>
+          <div class="box" style="margin-top:1rem"><h4>🤖 Cara pakai AI</h4><p>Prompt: <i>"Berikan breakdown MECE untuk menjelaskan penurunan EBITDA margin Q3 vs Q2, pastikan setiap driver tidak overlap dan totalnya merekonsiliasi ke selisih aktual."</i> → Review hasilnya: apakah benar ME? Apakah benar CE?</p></div>
+        `
+      },
+      {
+        title: "Issue tree (pengantar)",
+        html: `
+          <div class="kicker">Framework</div>
+          <h2>Issue Tree: memecah masalah secara hirarkis</h2>
+          <p>Issue tree memecah pertanyaan utama menjadi <b>cabang-cabang driver</b> hingga level yang bisa diukur atau diuji dengan data. Setiap level harus MECE.</p>
+          <div class="box"><h4>📊 Contoh: "Mengapa cash conversion cycle memburuk?"</h4>
+            <p style="font-family:monospace;font-size:0.85em;line-height:1.7;background:var(--bg);padding:0.8rem;border-radius:8px;">
+            CCC memburuk<br>
+            ├── DSO naik<br>
+            │ &nbsp;&nbsp;├── Invoice terlambat kirim<br>
+            │ &nbsp;&nbsp;├── Dispute pelanggan naik<br>
+            │ &nbsp;&nbsp;└── Terms kredit diperpanjang<br>
+            ├── DIO naik<br>
+            │ &nbsp;&nbsp;├── Slow-moving inventory<br>
+            │ &nbsp;&nbsp;└── Lead time supplier bertambah<br>
+            └── DPO turun<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;├── Supplier minta pembayaran lebih cepat<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;└── Early payment discount diambil
+            </p>
+          </div>
+          <div class="grid2" style="margin-top:1rem">
+            <div class="box"><h4>💡 Tips membangun</h4><p>1) Mulai dari pertanyaan utama. 2) Pecah max 3–5 cabang per level (MECE). 3) Berhenti saat cabang bisa dijawab dengan data spesifik.</p></div>
+            <div class="box"><h4>🤖 AI prompt</h4><p><i>"Buat issue tree untuk menganalisis mengapa gross margin turun 300bps YoY. Gunakan 3 level, pastikan MECE di setiap level."</i></p></div>
+          </div>
+        `
+      },
+      {
+        title: "First principles (pengantar)",
+        html: `
+          <div class="kicker">Framework</div>
+          <h2>First Principles: kembali ke dasar</h2>
+          <p>First principles mengajak Anda <b>membongkar semua asumsi</b>, lalu membangun analisis dari komponen paling fundamental—bukan dari cara biasa atau benchmark yang belum tentu relevan.</p>
+          <div class="box"><h4>Langkah penerapan</h4>
+            <p><b>1. Identifikasi keyakinan</b>: Budget naik 5%/tahun karena selalu begitu.</p>
+            <p><b>2. Tantang asumsi</b>: Apakah cost driver memang naik 5%? Mana datanya?</p>
+            <p><b>3. Pecah ke komponen dasar</b>: Headcount x avg salary x benefit rate + non-people cost.</p>
+            <p><b>4. Bangun ulang dari nol</b>: Hitung bottom-up dari rencana aktual.</p>
+          </div>
+          <div class="grid2" style="margin-top:1rem">
+            <div class="box"><h4>Kapan pakai?</h4><p>Budget kebiasaan tapi variance besar. Evaluasi definisi KPI. Proses closing lambat tanpa bottleneck jelas.</p></div>
+            <div class="box"><h4>AI prompt</h4><p><i>Bangun budget opex zero-based untuk dept sales 50 orang, tanpa mengacu budget tahun lalu.</i></p></div>
+          </div>
+          <ul style="display:none"><li>“sudah kebiasaan” tapi hasilnya tidak membaik.</li>
+            <li>Membantu menilai ulang definisi metrik, tujuan, dan constraint.</li>
+          </ul>
+        `
+      },
+      {
+        title: "5 Whys (pengantar)",
+        html: `
+          <div class="kicker">Framework</div>
+          <h2>5 Whys: mencari akar masalah dengan data</h2>
+          <p>Tanya “kenapa” berulang untuk bergerak dari gejala ke akar penyebab. Cocok untuk post-mortem kesalahan laporan, keterlambatan closing, atau temuan audit.</p>
+          <div class="box"><h4>Contoh: Laporan bulanan salah</h4>
+            <p style="font-family:monospace;font-size:0.85em;line-height:1.8;background:var(--bg);padding:0.8rem;border-radius:8px;">
+            Why 1: Angka revenue salah &rarr; data summary sheet salah<br>
+            Why 2: Summary sheet salah? &rarr; formula VLOOKUP ambil range lama<br>
+            Why 3: Range lama? &rarr; baris baru tapi template tidak di-update<br>
+            Why 4: Template tidak di-update? &rarr; tidak ada SOP review tiap closing<br>
+            Why 5: Tidak ada SOP? &rarr; proses closing belum didokumentasikan formal
+            </p>
+            <p><b>Akar masalah:</b> bukan error formula, tapi <i>tidak adanya SOP dokumentasi proses closing</i>.</p>
+          </div>
+          <div class="box" style="margin-top:1rem"><h4>Aturan emas</h4><p>Tiap “why” didukung bukti/indikasi data, bukan asumsi.</p></div>
+        `
+      },
+      {
+        title: "Kapan memakai framework yang mana?",
+        html: `
+          <div class="kicker">Praktik</div>
+          <h2>Memilih alat berpikir</h2>
+          <div class="grid2">
+            <div class="box"><h4>MECE</h4><p>Saat butuh struktur kategori yang rapi: varians, segmentasi, breakdown biaya.</p></div>
+            <div class="box"><h4>Issue tree</h4><p>Saat butuh peta sebab-akibat/driver dan rencana analisis bertahap.</p></div>
+            <div class="box"><h4>First principles</h4><p>Saat asumsi lama perlu dibongkar: redefinisi proses, metrik, atau strategi.</p></div>
+            <div class="box"><h4>5 Whys</h4><p>Saat investigasi akar masalah operasional/kontrol.</p></div>
+          </div>
+        `
+      },
+      {
+        title: "Data literacy: definisi",
+        html: `
+          <div class="kicker">Data literacy</div>
+          <h2>Data literacy untuk AI di finance</h2>
+          <p>Data literacy adalah kemampuan memahami jenis data, konteks bisnis, kualitas, serta bagaimana data memengaruhi output analisis dan AI. <b>Tanpa data literacy, Anda tidak bisa menilai apakah output AI benar atau salah.</b></p>
+          <div class="grid2">
+            <div class="box"><h4>Kompetensi inti</h4>
+              <ul>
+                <li><b>Definisi metrik</b>: revenue vs billings vs bookings—beda definisi, beda kesimpulan.</li>
+                <li><b>Konteks bisnis</b>: angka sama bisa bermakna berbeda antar divisi/entitas.</li>
+                <li><b>Sumber &amp; lineage</b>: tahu dari mana data berasal dan transformasi apa yang dilalui.</li>
+              </ul>
+            </div>
+            <div class="box"><h4>Dampak ke AI</h4>
+              <ul>
+                <li>Jika Anda tidak paham metrik, Anda tidak bisa mendeteksi hallucination AI.</li>
+                <li>Jika Anda tidak tahu sumber data, Anda tidak bisa menilai keandalan output.</li>
+                <li><b>Data literate = bisa jadi quality checker yang efektif untuk AI.</b></li>
+              </ul>
+            </div>
+          </div>
+        `
+      },
+      {
+        title: "Jenis data yang sering dipakai",
+        html: `
+          <div class="kicker">Data types</div>
+          <h2>Data: struktur vs tidak terstruktur</h2>
+          <div class="grid2">
+            <div class="box"><h4>Terstruktur</h4>
+              <p>Tabel GL, trial balance, ledger transaksi, budget vs actual, master data, aging schedule.</p>
+              <p><b>Kekuatan AI:</b> pattern detection, anomaly flagging, variance explanation, pivot/summary otomatis.</p>
+            </div>
+            <div class="box"><h4>Tidak terstruktur</h4>
+              <p>PDF kontrak, email, notulen, kebijakan, laporan naratif, berita, audit report.</p>
+              <p><b>Kekuatan AI:</b> meringkas, mengekstrak klausul kunci, membandingkan versi, Q&amp;A atas dokumen.</p>
+            </div>
+          </div>
+          <div class="box" style="margin-top:1rem"><h4>Semi-terstruktur</h4><p>JSON dari API, XML laporan bank, CSV export—perlu parsing tapi punya pola. AI bisa membantu normalisasi dan mapping ke format standar.</p></div>
+          <p class="muted">Apapun tipe datanya: verifikasi definisi, cek kualitas, dan pastikan konteks bisnis sudah jelas sebelum minta AI menganalisis.</p>
+        `
+      },
+      {
+        title: "Data quality: dimensi utama",
+        html: `
+          <div class="kicker">Quality</div>
+          <h2>Dimensi kualitas data (praktis)</h2>
+          <ul>
+            <li><b>Akurasi</b>: nilai benar dibanding sumber. <i>Contoh: saldo GL cocok dengan bank statement.</i></li>
+            <li><b>Kelengkapan</b>: tidak ada kolom/record kritikal yang hilang. <i>Contoh: semua cost center terisi, tidak ada NULL di amount.</i></li>
+            <li><b>Konsistensi</b>: definisi dan format seragam lintas sistem. <i>Contoh: "revenue" di ERP = "revenue" di BI tool.</i></li>
+            <li><b>Ketepatan waktu</b>: data up-to-date untuk keputusan. <i>Contoh: data closing M-1 tersedia sebelum review M.</i></li>
+            <li><b>Validitas</b>: memenuhi aturan bisnis. <i>Contoh: discount tidak boleh &gt;50%, tanggal invoice &le; tanggal kirim.</i></li>
+          </ul>
+          <div class="box" style="margin-top:1rem"><h4>Quick check sebelum pakai AI</h4><p>Sebelum memasukkan data ke AI, tanyakan: 1) Apakah data ini lengkap? 2) Apakah definisi metrik sudah jelas? 3) Kapan terakhir divalidasi? Jika ada yang belum yakin, <b>perbaiki dulu sebelum prompt</b>.</p></div>
+        `
+      },
+      {
+        title: "Mengapa data quality penting untuk AI",
+        html: `
+          <div class="kicker">Garbage in</div>
+          <h2>Garbage in, garbage out — amplified by AI</h2>
+          <p>Jika data yang Anda berikan ke AI salah/berantakan, AI bisa menghasilkan narasi yang <b>rapi tapi menyesatkan</b>. Kualitas presentasi bukan bukti kualitas kebenaran. AI justru membuat data buruk <i>terlihat lebih meyakinkan</i>—inilah bahayanya.</p>
+          <div class="grid2">
+            <div class="box" style="border-left:3px solid var(--danger)"><h4>Skenario berbahaya</h4>
+              <p>Data revenue tercampur dengan intercompany &rarr; AI menganalisis margin yang salah &rarr; rekomendasi "cutting cost" padahal margin sebenarnya sehat.</p>
+              <p><b>Output terlihat profesional, tapi keputusan bisa fatal.</b></p>
+            </div>
+            <div class="box"><h4>Kebiasaan yang disarankan</h4>
+              <ul>
+                <li>Minta AI menuliskan <b>asumsi</b> yang dipakai.</li>
+                <li>Minta AI menyebut <b>data source</b> dan periode.</li>
+                <li>Minta AI menandai area yang <b>perlu konfirmasi manusia</b>.</li>
+                <li>Cross-check angka kunci dengan sumber primer (GL, bank, kontrak).</li>
+              </ul>
+            </div>
+          </div>
+        `
+      },
+      {
+        title: "Latihan: audit data cepat",
+        html: `
+          <div class="kicker">Exercise</div>
+          <h2>Mini data audit (10–15 menit)</h2>
+          <p class="muted">Tujuan: melatih mata untuk kualitas data sebelum analisis/AI.</p>
+          <ul>
+            <li>Pilih 1 dataset finansial (contoh: budget vs actual) dan cek missing value, outlier, duplikasi, serta definisi metrik.</li>
+            <li>Tulis 3 risiko interpretasi jika definisi metrik salah.</li>
+            <li>Rancang 3 aturan validasi (range/format/rekonsiliasi) sebelum data dipakai AI.</li>
+          </ul>
+        `
+      },
+      {
+        title: "Prompt engineering: konsep",
+        html: `
+          <div class="kicker">Prompting</div>
+          <h2>Prompt yang baik = brief kerja yang baik</h2>
+          <p>Anggap prompt sebagai instruksi untuk analis junior yang cepat tapi perlu arahan jelas. Semakin jelas tujuan, konteks, format output, dan batasan—semakin berguna hasilnya.</p>
+          <div class="grid2">
+            <div class="box"><h4>Komponen inti</h4><p>Tujuan, konteks, data yang tersedia, peran (role), batasan, format output, contoh.</p></div>
+            <div class="box"><h4>Anti-pattern</h4><p>Pertanyaan terlalu umum, minta angka tanpa data, atau minta “jawaban final” tanpa langkah verifikasi.</p></div>
+          </div>
+        `
+      },
+      {
+        title: "Format prompt yang disarankan",
+        html: `
+          <div class="kicker">Prompt template</div>
+          <h2>Template sederhana (bisa dipakai ulang)</h2>
+          <div class="box">
+            <p style="margin:0; font-size:16px; color:var(--muted)">
+              <b>Role:</b> Anda adalah analis FP&A senior.<br/>
+              <b>Goal:</b> Buat ringkasan varians bulan ini untuk CFO.<br/>
+              <b>Context:</b> Fokus pada revenue & gross margin; perusahaan SaaS.<br/>
+              <b>Data:</b> (tempel tabel ringkas di sini).<br/>
+              <b>Constraints:</b> Jangan mengarang angka; jika data kurang, tanyakan.<br/>
+              <b>Output:</b> 1) 5 poin highlight, 2) risiko, 3) next questions.
+            </p>
+          </div>
+        `
+      },
+      {
+        title: "Prompt: minta struktur dulu",
+        html: `
+          <div class="kicker">Best practice</div>
+          <h2>Strategi: minta kerangka sebelum isi</h2>
+          <p>Untuk pekerjaan penting, minta AI membuat <b>outline/struktur</b> terlebih dahulu. Setelah Anda setuju strukturnya, baru minta AI mengisi detail. Ini mengurangi risiko arah yang salah.</p>
+          <div class="box"><h4>Contoh</h4><p>“Buat outline memo investasi (judul & subjudul) untuk topik X. Jangan isi konten dulu.”</p></div>
+        `
+      },
+      {
+        title: "Prompt: minta asumsi & ketidakpastian",
+        html: `
+          <div class="kicker">Best practice</div>
+          <h2>Paksa AI transparan soal asumsi</h2>
+          <ul>
+            <li>Minta daftar <b>asumsi</b> yang dipakai.</li>
+            <li>Minta bagian <b>Unknowns / data missing</b>.</li>
+            <li>Minta <b>verifikasi</b>: apa yang harus dicek sebelum dipakai.</li>
+          </ul>
+          <p class="muted">Ini sejalan dengan penggunaan AI sebagai co-pilot—bukan sumber kebenaran final.</p>
+        `
+      },
+      {
+        title: "Practical exercises: 3 light tasks",
+        html: `
+          <div class="kicker">Hands-on</div>
+          <h2>Latihan 1–3 (ringan tapi relevan)</h2>
+          <div class="grid2">
+            <div class="box"><h4>Latihan 1 — Drafting</h4><p>Buat draft email ke stakeholder tentang perubahan asumsi forecast (jelas, sopan, ringkas).</p></div>
+            <div class="box"><h4>Latihan 2 — Structuring</h4><p>Ubah catatan rapat menjadi action items + owner + timeline.</p></div>
+            <div class="box"><h4>Latihan 3 — Outlining</h4><p>Buat kerangka deck untuk review kinerja bulanan: slide titles + key messages.</p></div>
+            <div class="box"><h4>Aturan</h4><p>Gunakan data anonim/dummy. Jangan masukkan PII atau data rahasia.</p></div>
+          </div>
+        `
+      },
+      {
+        title: "Scenario prompt: analisis varians",
+        html: `
+          <div class="kicker">Scenario</div>
+          <h2>Prompt scenario 1: Revenue variance</h2>
+          <div class="box"><p style="margin:0; font-size:16px; color:var(--muted)"><b>Prompt:</b> "Kamu adalah analis FP&A. Diberikan tabel revenue actual vs budget per lini produk (data terlampir). Identifikasi 3 driver utama varians, jelaskan kemungkinan penyebab, dan sarankan pertanyaan lanjutan untuk manajemen. Tuliskan asumsi yang kamu pakai."</p></div>
+          <p class="muted">Diskusikan: apakah output AI cukup lengkap? Apa yang perlu ditambah/diverifikasi?</p>
+        `
+      },
+      {
+        title: "Scenario prompt: ringkasan laporan",
+        html: `
+          <div class="kicker">Scenario</div>
+          <h2>Prompt scenario 2: Ringkasan untuk CFO</h2>
+          <div class="box"><p style="margin:0; font-size:16px; color:var(--muted)"><b>Prompt:</b> "Ringkas laporan keuangan bulanan berikut menjadi 5 poin highlight, 2 risiko utama, dan 3 action items. Format: bullet points. Jangan mengarang angka."</p></div>
+          <p class="muted">Perhatikan: AI harus hanya menggunakan data yang Anda sediakan.</p>
+        `
+      },
+      {
+        title: "Scenario prompt: due diligence",
+        html: `
+          <div class="kicker">Scenario</div>
+          <h2>Prompt scenario 3: Checklist due diligence</h2>
+          <div class="box"><p style="margin:0; font-size:16px; color:var(--muted)"><b>Prompt:</b> "Buat checklist due diligence keuangan untuk akuisisi perusahaan manufaktur. Kelompokkan secara MECE: revenue, cost structure, working capital, debt, contingencies, tax. Untuk tiap kategori, beri 3–5 pertanyaan kunci."</p></div>
+        `
+      },
+      {
+        title: "Diskusi kelompok: evaluasi output AI",
+        html: `
+          <div class="kicker">Group activity</div>
+          <h2>Evaluasi output AI bersama</h2>
+          <ul>
+            <li>Jalankan salah satu scenario prompt di ChatGPT/tool AI.</li>
+            <li>Evaluasi: apakah output akurat, lengkap, dan actionable?</li>
+            <li>Identifikasi 2 hal yang bagus dan 2 hal yang perlu diperbaiki.</li>
+            <li>Tuliskan perbaikan prompt dan coba lagi—bandingkan hasilnya.</li>
+          </ul>
+        `
+      },
+      {
+        title: "Iterasi prompt: perbaiki hasilnya",
+        html: `
+          <div class="kicker">Technique</div>
+          <h2>Iterasi: prompt bukan one-shot</h2>
+          <p>Jarang sekali prompt pertama menghasilkan output sempurna. Biasakan siklus: <b>prompt → review → perbaiki prompt → review lagi</b>.</p>
+          <div class="grid2">
+            <div class="box"><h4>Cara memperbaiki</h4><p>Tambah konteks, perjelas format, batasi scope, minta langkah kerja, atau beri contoh output ideal.</p></div>
+            <div class="box"><h4>Tanda prompt perlu revisi</h4><p>Output terlalu umum, angka dikarang, format berantakan, atau informasi penting hilang.</p></div>
+          </div>
+        `
+      },
+      {
+        title: "Chain-of-thought prompting",
+        html: `
+          <div class="kicker">Advanced</div>
+          <h2>Minta AI 'berpikir bertahap'</h2>
+          <p>Dengan menambahkan instruksi seperti "Jelaskan langkah demi langkah" atau "Sebelum menjawab, tuliskan reasoning-mu", kualitas output bisa meningkat signifikan—terutama untuk analisis multi-langkah.</p>
+          <div class="box"><h4>Contoh</h4><p>"Analisis sensitivitas: langkah 1) identifikasi variabel, 2) tentukan range, 3) hitung dampak. Tunjukkan tiap langkah."</p></div>
+        `
+      },
+      {
+        title: "Prompt untuk tabel & data terstruktur",
+        html: `
+          <div class="kicker">Technique</div>
+          <h2>Bekerja dengan data tabular</h2>
+          <ul>
+            <li>Tempel data sebagai tabel Markdown atau CSV dalam prompt.</li>
+            <li>Minta output dalam format tabel/JSON agar mudah dicek.</li>
+            <li>Instruksikan: "Gunakan hanya data yang saya berikan; jangan tambahkan angka."</li>
+          </ul>
+          <p class="muted">Selalu cross-check angka penting di spreadsheet.</p>
+        `
+      },
+      {
+        title: "Contoh prompt: budget narrative",
+        html: `
+          <div class="kicker">Example</div>
+          <h2>Prompt: menyusun narasi budget</h2>
+          <div class="box"><p style="margin:0; font-size:16px; color:var(--muted)"><b>Role:</b> Budget analyst.<br/><b>Task:</b> Tulis narasi 1 halaman untuk budget pack Q3, berdasarkan tabel berikut.<br/><b>Tone:</b> profesional, ringkas.<br/><b>Rule:</b> Sebutkan asumsi kunci dan flagging area yang perlu konfirmasi.</p></div>
+        `
+      },
+      {
+        title: "Data safety: prinsip dasar",
+        html: `
+          <div class="kicker" style="color:var(--danger)">Safety</div>
+          <h2>Aturan data & keamanan saat memakai AI</h2>
+          <ul>
+            <li><b>Jangan masukkan PII</b> (nama klien, nomor rekening, NIK) ke AI publik.</li>
+            <li><b>Anonimkan</b> data sebelum dipakai: ganti nama, samarkan angka sensitif.</li>
+            <li><b>Ikuti kebijakan perusahaan</b>: gunakan hanya tool yang disetujui IT/Compliance.</li>
+            <li><b>Jangan upload dokumen rahasia</b> ke platform publik.</li>
+          </ul>
+        `
+      },
+      {
+        title: "Teknik anonimisasi data",
+        html: `
+          <div class="kicker">Safety</div>
+          <h2>Cara praktis anonimisasi</h2>
+          <div class="grid2">
+            <div class="box"><h4>Ganti identitas</h4><p>Nama → "Company A", "Client X". Angka sensitif → ubah skala atau pakai dummy.</p></div>
+            <div class="box"><h4>Hapus kolom PII</h4><p>Sebelum copy-paste, hapus kolom yang mengandung data pribadi.</p></div>
+            <div class="box"><h4>Gunakan template</h4><p>Buat template prompt yang sudah menghilangkan slot PII.</p></div>
+            <div class="box"><h4>Review sebelum kirim</h4><p>Baca ulang prompt Anda sebelum menekan Enter—cari jejak data rahasia.</p></div>
+          </div>
+        `
+      },
+      {
+        title: "Verifikasi output AI: checklist",
+        html: `
+          <div class="kicker">Quality control</div>
+          <h2>Checklist sebelum pakai output AI</h2>
+          <ul>
+            <li>Apakah angka sesuai data sumber? (cross-check manual)</li>
+            <li>Apakah asumsi dinyatakan dan masuk akal?</li>
+            <li>Apakah ada klaim tanpa sumber yang perlu diverifikasi?</li>
+            <li>Apakah format sesuai standar perusahaan?</li>
+            <li>Apakah ada bias atau informasi menyesatkan?</li>
+          </ul>
+        `
+      },
+      {
+        title: "Kesalahan umum saat memakai AI",
+        html: `
+          <div class="kicker" style="color:var(--danger)">Pitfalls</div>
+          <h2>5 kesalahan yang sering terjadi</h2>
+          <ul>
+            <li>Copy-paste output AI tanpa verifikasi.</li>
+            <li>Minta AI menghitung angka final (gunakan spreadsheet).</li>
+            <li>Prompt terlalu pendek/umum → output dangkal.</li>
+            <li>Memasukkan data rahasia ke platform publik.</li>
+            <li>Menganggap output pertama sudah final—tanpa iterasi.</li>
+          </ul>
+        `
+      },
+      {
+        title: "Studi kasus: AI membantu closing bulanan",
+        html: `
+          <div class="kicker">Case study</div>
+          <h2>Skenario: mempercepat month-end narrative</h2>
+          <p>Tim accounting menyediakan data summary (anonim). AI digunakan untuk: (1) draft narasi varians, (2) highlight outlier, (3) menyusun pertanyaan untuk business unit. Hasilnya diverifikasi sebelum dikirim ke CFO.</p>
+          <div class="box"><h4>Lessons learned</h4><p>Waktu drafting berkurang ~40%, tapi verifikasi tetap wajib. Prompt yang jelas menghasilkan output lebih akurat dari awal.</p></div>
+        `
+      },
+      {
+        title: "Studi kasus: AI untuk policy Q&A",
+        html: `
+          <div class="kicker">Case study</div>
+          <h2>Skenario: tanya-jawab kebijakan internal</h2>
+          <p>Dokumen kebijakan (travel, procurement, expense) diunggah ke tool AI internal. Karyawan bisa bertanya "Berapa batas reimburse hotel domestik?" dan mendapat jawaban + rujukan pasal.</p>
+          <div class="box"><h4>Kunci sukses</h4><p>Dokumen harus up-to-date, tool harus internal/approved, dan jawaban harus menyebut sumber pasal.</p></div>
+        `
+      },
+      {
+        title: "Governance AI di organisasi",
+        html: `
+          <div class="kicker">Governance</div>
+          <h2>Membangun guardrails di level organisasi</h2>
+          <ul>
+            <li>Kebijakan penggunaan AI yang jelas (apa boleh, apa tidak).</li>
+            <li>Daftar tool yang disetujui (approved tools list).</li>
+            <li>Pelatihan berkala untuk seluruh tim.</li>
+            <li>Proses review untuk output AI yang masuk ke keputusan penting.</li>
+          </ul>
+        `
+      },
+      {
+        title: "Responsible AI: prinsip",
+        html: `
+          <div class="kicker">Ethics</div>
+          <h2>Prinsip AI yang bertanggung jawab</h2>
+          <div class="grid2">
+            <div class="box"><h4>Fairness</h4><p>Hindari bias dalam data dan output; audit berkala.</p></div>
+            <div class="box"><h4>Transparency</h4><p>Jelaskan kapan AI digunakan dan apa batasannya.</p></div>
+            <div class="box"><h4>Accountability</h4><p>Manusia tetap bertanggung jawab atas keputusan akhir.</p></div>
+            <div class="box"><h4>Privacy</h4><p>Lindungi data pribadi dan rahasia perusahaan.</p></div>
+          </div>
+        `
+      },
+      {
+        title: "Tips memulai AI di tim Anda",
+        html: `
+          <div class="kicker">Getting started</div>
+          <h2>Langkah awal yang realistis</h2>
+          <ul>
+            <li>Pilih 1–2 use case "low risk, high frequency" (mis. drafting email, ringkasan meeting).</li>
+            <li>Buat prompt template bersama tim.</li>
+            <li>Tetapkan proses review sebelum output dikirim keluar.</li>
+            <li>Evaluasi setelah 1 bulan: apa yang berhasil, apa yang perlu diperbaiki.</li>
+          </ul>
+        `
+      },
+      {
+        title: "Refleksi: apa yang sudah dipelajari",
+        html: `
+          <div class="kicker">Reflection</div>
+          <h2>Review Day 1</h2>
+          <div class="grid2">
+            <div class="box"><h4>Fondasi</h4><p>AI/LLM basics, cara kerja, hallucination, mindset co-pilot.</p></div>
+            <div class="box"><h4>Penerapan</h4><p>Use cases finance, peta industri, batasan & risiko.</p></div>
+            <div class="box"><h4>Berpikir terstruktur</h4><p>MECE, issue tree, first principles, 5 Whys.</p></div>
+            <div class="box"><h4>Skill praktis</h4><p>Data literacy, prompt engineering, iterasi, verifikasi, safety.</p></div>
+          </div>
+        `
+      },
+      {
+        title: "Homework: persiapan Day 2",
+        html: `
+          <div class="kicker">Homework</div>
+          <h2>Tugas sebelum Day 2</h2>
+          <ul>
+            <li>Identifikasi 1 pekerjaan rutin Anda yang bisa dibantu AI.</li>
+            <li>Tulis prompt untuk pekerjaan tersebut (gunakan template).</li>
+            <li>Jalankan prompt dan catat: apa yang bagus, apa yang perlu diperbaiki.</li>
+            <li>Bawa hasil & catatan ke sesi Day 2.</li>
+          </ul>
+        `
+      },
+      {
+        title: "Preview Day 2",
+        html: `
+          <div class="kicker">Next</div>
+          <h2>Apa yang akan dibahas di Day 2</h2>
+          <p>Day 2 akan lebih hands-on: membuat workflow AI end-to-end untuk tugas nyata, advanced prompting, integrasi dengan tool kerja, dan membangun playbook tim.</p>
+          <div class="box"><h4>Bawa</h4><p>Laptop, akses ke tool AI yang disetujui, dan hasil homework.</p></div>
+        `
+      },
+      {
+        title: "Resources & bacaan lanjutan",
+        html: `
+          <div class="kicker">Resources</div>
+          <h2>Referensi untuk eksplorasi mandiri</h2>
+          <ul>
+            <li>OpenAI Prompt Engineering Guide</li>
+            <li>Google "People + AI Guidebook"</li>
+            <li>McKinsey: "The State of AI" report (tahunan)</li>
+            <li>Internal: kebijakan penggunaan AI perusahaan Anda</li>
+          </ul>
+          <p class="muted">Pastikan selalu cek versi terbaru—landscape AI berubah cepat.</p>
+        `
+      },
+      {
+        title: "Q&A",
+        html: `
+          <div class="kicker">Interactive</div>
+          <h2>Sesi tanya-jawab</h2>
+          <p>Silakan ajukan pertanyaan tentang materi hari ini: AI basics, structured thinking, data quality, prompting, safety, atau implementasi di tim Anda.</p>
+          <div class="box"><h4>Tidak ada pertanyaan bodoh</h4><p>Justru pertanyaan yang paling 'basic' sering kali paling penting untuk diperjelas.</p></div>
+        `
+      },
+      {
+        title: "Ringkasan satu halaman",
+        html: `
+          <div class="kicker">Summary</div>
+          <h2>Day 1 dalam satu slide</h2>
+          <ul>
+            <li><b>AI = co-pilot</b>: bantu draft, struktur, ringkas—bukan pengambil keputusan.</li>
+            <li><b>LLM bisa salah</b>: selalu verifikasi, minta asumsi, cross-check angka.</li>
+            <li><b>Structured thinking</b>: MECE, issue tree, first principles, 5 Whys memberi arah analisis.</li>
+            <li><b>Data quality</b>: garbage in = garbage out; audit sebelum pakai.</li>
+            <li><b>Prompt = brief</b>: jelas, kontekstual, iteratif, dan transparan soal batasan.</li>
+            <li><b>Safety first</b>: anonimisasi, tool approved, review sebelum kirim.</li>
+          </ul>
+        `
+      },
+      {
+        title: "Kata penutup",
+        html: `
+          <div class="kicker">Closing</div>
+          <h2>Sampai jumpa di Day 2!</h2>
+          <p>AI adalah alat yang powerful—tetapi nilai terbesarnya muncul dari cara Anda berpikir, bertanya, dan memverifikasi. Terus eksplorasi, tetap kritis, dan bangun kebiasaan yang aman.</p>
+          <p class="muted">Terima kasih atas partisipasi aktif hari ini. Selamat mengerjakan homework!</p>
+        `
+      },
+      {
+        title: "Kontak & feedback",
+        html: `
+          <div class="kicker">Feedback</div>
+          <h2>Sampaikan masukan Anda</h2>
+          <p>Masukan Anda membantu kami meningkatkan kualitas sesi berikutnya. Silakan isi form feedback yang dibagikan, atau hubungi fasilitator langsung.</p>
+          <div class="tagrow">
+            <span class="tag">Day 1 complete</span>
+            <span class="tag">60 slides</span>
+            <span class="tag">AI in Finance</span>
+          </div>
+        `
+      }
+    ];
+
+    const elSlide = document.getElementById('slide');
+    const elCounter = document.getElementById('slideCounter');
+    const elBar = document.getElementById('bar');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const overviewBtn = document.getElementById('overviewBtn');
+
+    let idx = 0;
+    let inOverview = false;
+
+    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
+    function pct(){
+      if (!slides.length) return 0;
+      return ((idx + 1) / slides.length) * 100;
+    }
+
+    function setCounter(){
+      elCounter.textContent = `Slide ${idx + 1} / ${slides.length || 60}`;
+      elBar.style.width = `${pct()}%`;
+      prevBtn.disabled = idx <= 0;
+      nextBtn.disabled = slides.length ? idx >= slides.length - 1 : false;
+    }
+
+    function renderSlide(){
+      if (!slides.length){
+        elSlide.innerHTML = `
+          <div class="kicker">DRAFT</div>
+          <h1>Deck sedang disusun…</h1>
+          <p class="muted">Saya akan mengisi konten 60 slide berdasarkan dua dokumen: (1) Agenda & workshop Day 1, dan (2) Fundamental AI for Finance — Day 1. Setelah terisi, Anda bisa navigasi dengan tombol atau keyboard.</p>
+          <div class="grid2">
+            <div class="box"><h4>Yang akan masuk</h4><p>Agenda, AI fundamentals, jenis AI & use cases finance, structured thinking (MECE, issue tree, first principles, 5 Whys), data literacy & quality, prompt engineering, latihan, safety rules, wrap-up.</p></div>
+            <div class="box"><h4>Format</h4><p>60 slide ringkas tapi komprehensif, siap dipakai untuk kelas/workshop 1 hari.</p></div>
+          </div>
+          <div class="tagrow">
+            <span class="tag">AI in Finance</span><span class="tag">LLM</span><span class="tag">Prompting</span><span class="tag">Data Quality</span><span class="tag">Structured Thinking</span>
+          </div>
+        `;
+        setCounter();
+        return;
+      }
+
+      if (inOverview){
+        renderOverview();
+        return;
+      }
+
+      elSlide.innerHTML = slides[idx].html;
+      setCounter();
+    }
+
+    function renderOverview(){
+      const items = slides.map((s, i) => {
+        const safe = (s.title || `Slide ${i+1}`).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        return `<li><a href="#" data-i="${i}" style="color: var(--text); text-decoration:none;">${i+1}. ${safe}</a></li>`;
+      }).join('');
+
+      elSlide.innerHTML = `
+        <div class="kicker">OVERVIEW</div>
+        <h2>Daftar judul slide</h2>
+        <p class="muted">Klik judul untuk lompat. Tekan <span class="kbd">Esc</span> atau <span class="kbd">O</span> untuk kembali.</p>
+        <div class="box" style="max-height: calc(100vh - 260px); overflow:auto;">
+          <ul style="margin-top:0">${items}</ul>
+        </div>
+      `;
+      setCounter();
+
+      elSlide.querySelectorAll('a[data-i]').forEach(a => {
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          idx = clamp(parseInt(a.getAttribute('data-i'), 10), 0, slides.length-1);
+          inOverview = false;
+          renderSlide();
+        });
+      });
+    }
+
+    function next(){
+      if (!slides.length) return;
+      if (idx < slides.length - 1) idx++;
+      renderSlide();
+    }
+
+    function prev(){
+      if (!slides.length) return;
+      if (idx > 0) idx--;
+      renderSlide();
+    }
+
+    function toggleOverview(){
+      if (!slides.length) return;
+      inOverview = !inOverview;
+      renderSlide();
+    }
+
+    prevBtn.addEventListener('click', prev);
+    nextBtn.addEventListener('click', next);
+    overviewBtn.addEventListener('click', toggleOverview);
+
+    window.addEventListener('keydown', (e) => {
+      const key = e.key;
+      if (key === 'ArrowRight' || key === ' ' || key === 'PageDown') { e.preventDefault(); next(); }
+      if (key === 'ArrowLeft' || key === 'Backspace' || key === 'PageUp') { e.preventDefault(); prev(); }
+      if (key === 'o' || key === 'O') { e.preventDefault(); toggleOverview(); }
+      if (key === 'Escape') {
+        if (inOverview){ inOverview = false; renderSlide(); }
+      }
+    });
+
+    renderSlide();
+  </script>
+</body>
+</html>
