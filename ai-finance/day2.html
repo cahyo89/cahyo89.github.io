@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hands-On: Prompt Library Finance — AI for Finance Day 2</title>
+<style>
+  :root {
+    --green-50: #EAF3DE; --green-100: #C0DD97; --green-200: #97C459;
+    --green-400: #639922; --green-600: #3B6D11; --green-800: #27500A;
+    --teal-50: #E1F5EE; --teal-100: #9FE1CB; --teal-200: #5DCAA5;
+    --teal-400: #1D9E75; --teal-600: #0F6E56; --teal-800: #085041;
+    --amber-50: #FAEEDA; --amber-100: #FAC775; --amber-200: #EF9F27;
+    --amber-400: #BA7517; --amber-600: #854F0B; --amber-800: #633806;
+    --red-50: #FCEBEB; --red-100: #F7C1C1; --red-200: #F09595;
+    --red-400: #E24B4A; --red-600: #A32D2D; --red-800: #791F1F;
+    --blue-50: #E6F1FB; --blue-100: #B5D4F4; --blue-200: #85B7EB;
+    --blue-400: #378ADD; --blue-600: #185FA5; --blue-800: #0C447C;
+    --gray-50: #F1EFE8; --gray-100: #D3D1C7; --gray-200: #B4B2A9;
+    --gray-400: #888780; --gray-600: #5F5E5A; --gray-800: #444441;
+    --coral-50: #FAECE7; --coral-100: #F5C4B3; --coral-200: #F0997B;
+    --coral-400: #D85A30; --coral-600: #993C1D; --coral-800: #712B13;
+    --bg: #ffffff; --bg-2: #F8F7F4; --bg-3: #F1EFE8;
+    --text: #1a1a1a; --text-2: #555; --text-3: #888;
+    --border: rgba(0,0,0,0.12); --border-2: rgba(0,0,0,0.07);
+    --radius: 10px; --radius-lg: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Georgia', serif; background: var(--bg-2); color: var(--text); font-size: 15px; line-height: 1.65; }
+
+  .page-header {
+    background: var(--green-600); color: white; padding: 2.5rem 2rem 2rem;
+    border-bottom: 4px solid var(--green-400);
+  }
+  .page-header .badge {
+    display: inline-block; background: var(--green-400); color: var(--green-800);
+    font-size: 11px; font-weight: bold; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 4px; margin-bottom: 0.75rem; font-family: monospace;
+  }
+  .page-header h1 { font-size: 26px; font-weight: normal; color: white; margin-bottom: 0.4rem; }
+  .page-header p { color: rgba(255,255,255,0.8); font-size: 14px; }
+
+  .container { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+  /* Nav tabs */
+  .tab-nav {
+    display: flex; gap: 4px; background: var(--bg-3); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 5px; margin-bottom: 2rem; flex-wrap: wrap;
+  }
+  .tab-btn {
+    flex: 1; min-width: 100px; padding: 8px 12px; border: none; background: transparent;
+    cursor: pointer; border-radius: 8px; font-size: 13px; color: var(--text-2);
+    font-family: inherit; transition: all 0.15s; text-align: center;
+  }
+  .tab-btn.active { background: white; color: var(--green-800); font-weight: bold;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+  .tab-btn:hover:not(.active) { background: rgba(255,255,255,0.6); }
+
+  /* Sections */
+  .tab-section { display: none; }
+  .tab-section.active { display: block; }
+
+  /* Data card */
+  .data-card {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; margin-bottom: 1.25rem;
+  }
+  .data-card h3 { font-size: 15px; color: var(--text); margin-bottom: 0.75rem;
+    display: flex; align-items: center; gap: 8px; }
+  .data-card h3 .label {
+    font-size: 11px; background: var(--blue-50); color: var(--blue-600);
+    padding: 2px 8px; border-radius: 4px; font-weight: normal; font-family: monospace;
+  }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: var(--bg-3); padding: 8px 10px; text-align: left;
+    font-weight: bold; color: var(--text-2); border-bottom: 1px solid var(--border); font-size: 12px; }
+  td { padding: 8px 10px; border-bottom: 1px solid var(--border-2); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; font-family: monospace; }
+  .delta-pos { color: var(--teal-600); font-weight: bold; }
+  .delta-neg { color: var(--red-600); font-weight: bold; }
+  .row-total { font-weight: bold; background: var(--green-50); }
+  .row-warn { background: var(--red-50); }
+  .row-ok { background: var(--teal-50); }
+
+  /* Prompt box */
+  .prompt-box {
+    background: #1a1a2e; border-radius: var(--radius); padding: 1.25rem;
+    margin: 1rem 0; position: relative;
+  }
+  .prompt-box pre {
+    color: #a8d8a0; font-family: 'Courier New', monospace; font-size: 12.5px;
+    line-height: 1.7; white-space: pre-wrap; word-break: break-word;
+  }
+  .prompt-box .prompt-label {
+    position: absolute; top: -10px; left: 12px;
+    background: var(--green-600); color: white;
+    font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 4px;
+    font-family: monospace; letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  .copy-btn {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.7); font-size: 11px; padding: 4px 10px;
+    border-radius: 5px; cursor: pointer; font-family: monospace;
+    transition: all 0.15s;
+  }
+  .copy-btn:hover { background: rgba(255,255,255,0.2); color: white; }
+
+  /* Steps */
+  .step-list { counter-reset: step; list-style: none; }
+  .step-list li {
+    counter-increment: step; padding: 0.85rem 1rem 0.85rem 3rem;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 8px; position: relative;
+    font-size: 14px; line-height: 1.6;
+  }
+  .step-list li::before {
+    content: counter(step);
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    width: 24px; height: 24px; background: var(--green-400); color: var(--green-800);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: bold; font-size: 12px; font-family: monospace;
+  }
+  .step-list li strong { color: var(--green-800); }
+  .step-list li code {
+    background: var(--bg-3); border: 1px solid var(--border);
+    padding: 1px 6px; border-radius: 4px; font-size: 12px; font-family: monospace;
+  }
+
+  /* QA Checklist */
+  .qa-section { margin-bottom: 1.5rem; }
+  .qa-section h4 {
+    font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--text-2); margin-bottom: 0.5rem; padding: 0.4rem 0.75rem;
+    border-left: 3px solid var(--green-400);
+  }
+  .qa-item {
+    display: flex; align-items: flex-start; gap: 10px; padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--border-2); font-size: 13.5px; cursor: pointer;
+    transition: background 0.1s; border-radius: 6px;
+  }
+  .qa-item:hover { background: var(--bg-3); }
+  .qa-item input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; margin-top: 2px; flex-shrink: 0; }
+  .qa-item label { cursor: pointer; flex: 1; }
+  .qa-item .severity {
+    font-size: 10px; font-weight: bold; padding: 2px 7px; border-radius: 3px;
+    text-transform: uppercase; letter-spacing: 0.04em; flex-shrink: 0; margin-top: 2px;
+  }
+  .sev-kritis { background: var(--red-50); color: var(--red-600); }
+  .sev-penting { background: var(--amber-50); color: var(--amber-600); }
+  .sev-baik { background: var(--green-50); color: var(--green-600); }
+
+  .qa-score-bar {
+    background: var(--bg-3); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 1.25rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .qa-score-bar .score-val {
+    font-size: 32px; font-weight: bold; min-width: 60px; text-align: center; font-family: monospace;
+  }
+  .qa-score-bar .score-label { font-size: 13px; color: var(--text-2); }
+  .progress-wrap { flex: 1; background: var(--bg-3); border-radius: 4px; height: 8px;
+    border: 1px solid var(--border); }
+  .progress-bar { height: 100%; border-radius: 4px; background: var(--green-400); transition: width 0.3s; }
+  .score-verdict { font-size: 13px; font-weight: bold; }
+
+  /* Info boxes */
+  .info-box {
+    border-radius: var(--radius); padding: 0.85rem 1rem; margin: 1rem 0;
+    font-size: 13.5px; border-left: 3px solid;
+  }
+  .info-box.tip { background: var(--teal-50); border-color: var(--teal-400); color: var(--teal-800); }
+  .info-box.warn { background: var(--amber-50); border-color: var(--amber-400); color: var(--amber-800); }
+  .info-box.danger { background: var(--red-50); border-color: var(--red-400); color: var(--red-800); }
+
+  /* Section label */
+  .section-header { margin: 2rem 0 1rem; }
+  .section-header h2 { font-size: 19px; font-weight: normal; color: var(--text); }
+  .section-header p { font-size: 13.5px; color: var(--text-2); margin-top: 4px; }
+
+  /* Highlight diff */
+  .hl-role { color: #79c0ff; }
+  .hl-konteks { color: #ffa657; }
+  .hl-data { color: #7ee787; }
+  .hl-task { color: #d2a8ff; }
+  .hl-constraint { color: #ff7b72; }
+
+  /* Legend */
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; margin: 0.5rem 0 1rem; font-size: 12px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* Print / export */
+  @media print {
+    .tab-nav, .copy-btn { display: none; }
+    .tab-section { display: block !important; page-break-before: always; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div style="max-width:860px; margin:0 auto;">
+    <div class="badge">Hands-On Module · Day 2</div>
+    <h1>Prompt Library Finance — Praktik Langsung</h1>
+    <p>Data sintetis · Langkah-langkah · QA Checklist | Multimatics × BPJS Ketenagakerjaan</p>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="showTab('data')">📊 Data Sintetis</button>
+    <button class="tab-btn" onclick="showTab('promptA')">A — Issue Tree</button>
+    <button class="tab-btn" onclick="showTab('promptB')">B — Variance</button>
+    <button class="tab-btn" onclick="showTab('promptC')">C — Forecasting</button>
+    <button class="tab-btn" onclick="showTab('promptE')">E — Red Flag</button>
+    <button class="tab-btn" onclick="showTab('qa')">✅ QA Checklist</button>
+  </div>
+
+  <!-- ===== TAB: DATA SINTETIS ===== -->
+  <div id="tab-data" class="tab-section active">
+
+    <div class="section-header">
+      <h2>Dataset Sintetis — BPJSTK Fiktif (Aman untuk AI Publik)</h2>
+      <p>Semua angka di bawah adalah data dummy yang dirancang untuk latihan. Jangan gunakan data nyata organisasi.</p>
+    </div>
+
+    <div class="info-box tip">
+      💡 <strong>Cara pakai:</strong> Copy tabel yang relevan sesuai prompt yang akan dicoba. Setiap prompt hands-on sudah mereferensikan tabel mana yang digunakan.
+    </div>
+
+    <!-- Dataset 1 -->
+    <div class="data-card">
+      <h3>Tabel 1 — Laporan Kinerja Keuangan (IDR Miliar) <span class="label">Untuk Prompt A & B</span></h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th><th class="num">Q1 2024</th><th class="num">Q2 2024</th><th class="num">Delta (Rp)</th><th class="num">Delta (%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Total Iuran (Revenue)</strong></td><td class="num">8.450</td><td class="num">9.120</td><td class="num delta-pos">+670</td><td class="num delta-pos">+7,9%</td></tr>
+          <tr><td>&nbsp;&nbsp; — Iuran JKK</td><td class="num">2.110</td><td class="num">2.260</td><td class="num delta-pos">+150</td><td class="num delta-pos">+7,1%</td></tr>
+          <tr><td>&nbsp;&nbsp; — Iuran JKm</td><td class="num">1.690</td><td class="num">1.825</td><td class="num delta-pos">+135</td><td class="num delta-pos">+8,0%</td></tr>
+          <tr><td>&nbsp;&nbsp; — Iuran JHT</td><td class="num">4.650</td><td class="num">5.035</td><td class="num delta-pos">+385</td><td class="num delta-pos">+8,3%</td></tr>
+          <tr><td><strong>Total Klaim Dibayar</strong></td><td class="num">5.070</td><td class="num">5.835</td><td class="num delta-neg">+765</td><td class="num delta-neg">+15,1%</td></tr>
+          <tr><td>&nbsp;&nbsp; — Klaim JKK</td><td class="num">1.055</td><td class="num">1.244</td><td class="num delta-neg">+189</td><td class="num delta-neg">+17,9%</td></tr>
+          <tr><td>&nbsp;&nbsp; — Klaim JKm</td><td class="num">845</td><td class="num">1.022</td><td class="num delta-neg">+177</td><td class="num delta-neg">+20,9%</td></tr>
+          <tr><td>&nbsp;&nbsp; — Klaim JHT</td><td class="num">3.170</td><td class="num">3.569</td><td class="num delta-neg">+399</td><td class="num delta-neg">+12,6%</td></tr>
+          <tr><td><strong>Biaya Operasional</strong></td><td class="num">845</td><td class="num">930</td><td class="num delta-neg">+85</td><td class="num delta-neg">+10,1%</td></tr>
+          <tr class="row-total"><td><strong>Surplus Bersih</strong></td><td class="num">2.535</td><td class="num">2.355</td><td class="num delta-neg">-180</td><td class="num delta-neg">-7,1%</td></tr>
+          <tr class="row-total"><td><strong>Surplus Margin</strong></td><td class="num">30,0%</td><td class="num">25,8%</td><td class="num delta-neg" colspan="2">−420 bps</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Dataset 2 -->
+    <div class="data-card">
+      <h3>Tabel 2 — Data Bulanan Iuran JHT (IDR Miliar) <span class="label">Untuk Prompt C — Forecasting</span></h3>
+      <table>
+        <thead>
+          <tr><th>Bulan</th><th class="num">Peserta Aktif (Juta)</th><th class="num">Iuran JHT (Rp M)</th><th class="num">Growth MoM</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Jan 2024</td><td class="num">38,2</td><td class="num">4.580</td><td class="num">—</td></tr>
+          <tr><td>Feb 2024</td><td class="num">38,5</td><td class="num">4.612</td><td class="num delta-pos">+0,7%</td></tr>
+          <tr><td>Mar 2024</td><td class="num">38,9</td><td class="num">4.680</td><td class="num delta-pos">+1,5%</td></tr>
+          <tr><td>Apr 2024</td><td class="num">39,1</td><td class="num">4.710</td><td class="num delta-pos">+0,6%</td></tr>
+          <tr><td>Mei 2024</td><td class="num">39,4</td><td class="num">4.790</td><td class="num delta-pos">+1,7%</td></tr>
+          <tr><td>Jun 2024</td><td class="num">39,8</td><td class="num">4.870</td><td class="num delta-pos">+1,7%</td></tr>
+          <tr><td>Jul 2024</td><td class="num">40,0</td><td class="num">4.890</td><td class="num delta-pos">+0,4%</td></tr>
+          <tr><td>Agu 2024</td><td class="num">40,3</td><td class="num">4.945</td><td class="num delta-pos">+1,1%</td></tr>
+          <tr><td>Sep 2024</td><td class="num">40,1</td><td class="num">4.910</td><td class="num delta-neg">-0,7%</td></tr>
+          <tr><td>Okt 2024</td><td class="num">40,5</td><td class="num">5.010</td><td class="num delta-pos">+2,0%</td></tr>
+          <tr><td>Nov 2024</td><td class="num">40,8</td><td class="num">5.060</td><td class="num delta-pos">+1,0%</td></tr>
+          <tr><td>Des 2024</td><td class="num">41,2</td><td class="num">5.145</td><td class="num delta-pos">+1,7%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Dataset 3 -->
+    <div class="data-card">
+      <h3>Tabel 3 — Log Transaksi Operasional (Fiktif) <span class="label">Untuk Prompt E — Red Flag</span></h3>
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Tanggal</th><th>Vendor</th><th>Kategori</th><th class="num">Amount (Juta)</th><th>Catatan</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>TRX-001</td><td>02/07</td><td>CV Sejahtera</td><td>Pengadaan ATK</td><td class="num">48</td><td>Normal</td></tr>
+          <tr><td>TRX-002</td><td>05/07</td><td>PT Maju Jaya</td><td>Pemeliharaan Gedung</td><td class="num">320</td><td>Normal</td></tr>
+          <tr class="row-warn"><td>TRX-003</td><td>07/07</td><td>CV Sejahtera</td><td>Pengadaan ATK</td><td class="num">47</td><td>⚠ Mirip TRX-001</td></tr>
+          <tr><td>TRX-004</td><td>10/07</td><td>PT Teknologi ID</td><td>Lisensi Software</td><td class="num">215</td><td>Normal</td></tr>
+          <tr class="row-warn"><td>TRX-005</td><td>12/07</td><td>PT Cepat Kilat</td><td>Konsultasi IT</td><td class="num">890</td><td>⚠ Vendor baru, amount besar</td></tr>
+          <tr><td>TRX-006</td><td>14/07</td><td>PT Listrik Prima</td><td>Utilitas</td><td class="num">125</td><td>Normal</td></tr>
+          <tr class="row-warn"><td>TRX-007</td><td>15/07</td><td>CV Solusi Cepat</td><td>Konsultasi Manajemen</td><td class="num">148</td><td>⚠ Invoice "urgent"</td></tr>
+          <tr class="row-warn"><td>TRX-008</td><td>18/07</td><td>CV Solusi Cepat</td><td>Konsultasi Manajemen</td><td class="num">147</td><td>⚠ Split invoice?</td></tr>
+          <tr><td>TRX-009</td><td>22/07</td><td>PT Sarana Kantor</td><td>Sewa Peralatan</td><td class="num">95</td><td>Normal</td></tr>
+          <tr class="row-warn"><td>TRX-010</td><td>31/07</td><td>PT Maju Jaya</td><td>Pemeliharaan Gedung</td><td class="num">318</td><td>⚠ Akhir bulan, mirip TRX-002</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Dataset 4 -->
+    <div class="data-card">
+      <h3>Tabel 4 — Parameter Model Surplus (Untuk Prompt Sensitivity) <span class="label">Referensi</span></h3>
+      <table>
+        <thead><tr><th>Parameter</th><th class="num">Nilai Base</th><th>Keterangan</th></tr></thead>
+        <tbody>
+          <tr><td>Peserta Aktif</td><td class="num">40.000.000</td><td>Per semester 1 2024</td></tr>
+          <tr><td>Iuran Rata-rata/Peserta/Bulan</td><td class="num">Rp 18.750</td><td>Rata-rata seluruh program</td></tr>
+          <tr><td>Klaim Rate JKK</td><td class="num">3,2%</td><td>% dari iuran JKK</td></tr>
+          <tr><td>Klaim Rate JKm</td><td class="num">2,8%</td><td>% dari iuran JKm</td></tr>
+          <tr><td>Biaya Operasional</td><td class="num">9,5%</td><td>% dari total iuran</td></tr>
+          <tr><td>Growth Peserta Target</td><td class="num">7% per tahun</td><td>Rencana strategis</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- ===== TAB: PROMPT A ===== -->
+  <div id="tab-promptA" class="tab-section">
+
+    <div class="section-header">
+      <h2>Prompt A — Issue Tree MECE</h2>
+      <p>Membangun hipotesis terstruktur untuk masalah penurunan surplus margin 420 bps.</p>
+    </div>
+
+    <div class="info-box tip">
+      📋 <strong>Gunakan Tabel 1</strong> (Kinerja Q1 vs Q2 2024) sebagai konteks data untuk prompt ini.
+    </div>
+
+    <div class="section-header"><h2 style="font-size:16px;">Langkah-langkah Praktik</h2></div>
+    <ol class="step-list">
+      <li><strong>Baca Tabel 1 selama 3 menit.</strong> Identifikasi satu anomali paling mencolok secara visual sebelum menulis prompt apapun.</li>
+      <li><strong>Rumuskan problem statement</strong> dalam satu kalimat: "Surplus margin turun dari 30,0% ke 25,8% — padahal iuran naik 7,9%." Tuliskan ini sebelum membuka AI.</li>
+      <li><strong>Copy prompt di bawah</strong> ke Claude atau ChatGPT. Ganti bagian <code>[KONTEKS DATA]</code> dengan data dari Tabel 1.</li>
+      <li><strong>Jalankan prompt</strong> dan baca output. Periksa: apakah ada 3 level? Apakah MECE?</li>
+      <li><strong>Bandingkan</strong> hipotesis AI dengan analisis awal Anda di langkah 2 — mana yang terlewat?</li>
+      <li><strong>Catat asumsi AI</strong> yang tidak eksplisit di data — ini adalah area verifikasi prioritas.</li>
+    </ol>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#79c0ff"></div> ROLE</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ffa657"></div> KONTEKS</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#7ee787"></div> DATA</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#d2a8ff"></div> TASK</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ff7b72"></div> CONSTRAINT</div>
+    </div>
+
+    <div class="prompt-box">
+      <div class="prompt-label">PROMPT A — Issue Tree MECE</div>
+      <button class="copy-btn" onclick="copyPrompt('pA')">Copy</button>
+      <pre id="pA"><span class="hl-role">ROLE: Bertindak sebagai Senior Finance Analyst BPJSTK.</span>
+
+<span class="hl-konteks">KONTEKS: Surplus margin turun dari 30,0% ke 25,8% QoQ (−420 bps),
+padahal total iuran naik 7,9%. Ini adalah masalah yang perlu
+diinvestigasi secara terstruktur.</span>
+
+<span class="hl-data">DATA (dari Laporan Kinerja Q1 vs Q2 2024, IDR Miliar):
+- Total Iuran: 8.450 → 9.120 (+670, +7,9%)
+- Total Klaim: 5.070 → 5.835 (+765, +15,1%)
+  • Klaim JKK: 1.055 → 1.244 (+17,9%)
+  • Klaim JKm: 845 → 1.022 (+20,9%)
+  • Klaim JHT: 3.170 → 3.569 (+12,6%)
+- Biaya Operasional: 845 → 930 (+10,1%)
+- Surplus Bersih: 2.535 → 2.355 (-180, -7,1%)</span>
+
+<span class="hl-task">TASK:
+1) Buat issue tree MECE untuk driver penurunan surplus margin 420 bps.
+   - Level 1: 3-4 driver utama (pastikan MECE, tidak overlap)
+   - Level 2: 3-4 sub-driver per node Level 1
+   - Level 3: leaf nodes yang bisa diuji dengan data spesifik
+2) Untuk setiap leaf node di Level 3:
+   - Metrik yang mengukurnya
+   - Data minimum yang dibutuhkan untuk menguji
+   - Pertanyaan sanity check
+3) Prioritaskan 3 leaf node dengan potensi dampak terbesar (dalam bps)
+FORMAT: Tree bertingkat + tabel data minimum per leaf node</span>
+
+<span class="hl-constraint">CONSTRAINT:
+- Jangan tambah asumsi di luar data yang diberikan
+- Flag dengan [DATA REQUIRED] jika node tidak bisa diuji dari data ini
+- Jangan simpulkan penyebab — hanya susun hipotesis terstruktur
+- Pastikan MECE di setiap level; tandai jika ada overlap</span></pre>
+    </div>
+
+    <div class="info-box warn">
+      ⚠️ <strong>Verifikasi wajib:</strong> Cek apakah AI menyebut "klaim tumbuh lebih cepat dari iuran" sebagai driver utama — ini harus muncul di Level 1. Jika tidak ada, prompt kurang konteks atau outputnya tidak lengkap.
+    </div>
+
+  </div>
+
+  <!-- ===== TAB: PROMPT B ===== -->
+  <div id="tab-promptB" class="tab-section">
+
+    <div class="section-header">
+      <h2>Prompt B — Variance Analysis dengan Dekomposisi Driver</h2>
+      <p>Mendekomposisi penurunan surplus 180 miliar ke level driver yang bisa direkonsiliasi.</p>
+    </div>
+
+    <div class="info-box tip">
+      📋 <strong>Gunakan Tabel 1</strong> (Kinerja Q1 vs Q2 2024). Fokus pada kolom Delta.
+    </div>
+
+    <div class="section-header"><h2 style="font-size:16px;">Langkah-langkah Praktik</h2></div>
+    <ol class="step-list">
+      <li><strong>Hitung manual dulu:</strong> Hitung selisih klaim JKK + JKm + JHT. Apakah totalnya = 765? Ini adalah referensi rekonsiliasi Anda.</li>
+      <li><strong>Identifikasi secara manual:</strong> Program mana yang klaim tumbuhnya paling cepat dibanding iurannya? Ini adalah hipotesis utama Anda.</li>
+      <li><strong>Jalankan prompt</strong> dan perhatikan apakah AI menghasilkan tabel yang bisa Anda verifikasi angka per angkanya.</li>
+      <li><strong>Rekonsiliasi output AI:</strong> Total semua driver dalam bps harus = −420 bps. Jika tidak sama, output belum selesai.</li>
+      <li><strong>Cek klasifikasi:</strong> Apakah AI memisahkan driver one-off vs recurring? Ini penting untuk proyeksi Q3.</li>
+    </ol>
+
+    <div class="prompt-box">
+      <div class="prompt-label">PROMPT B — Variance Analysis</div>
+      <button class="copy-btn" onclick="copyPrompt('pB')">Copy</button>
+      <pre id="pB"><span class="hl-role">ROLE: Senior FP&A Analyst BPJSTK.</span>
+
+<span class="hl-data">DATA KINERJA Q1 vs Q2 2024 (IDR Miliar):
+
+Program       | Iuran Q1 | Iuran Q2 | Klaim Q1 | Klaim Q2
+JKK           |   2.110  |   2.260  |  1.055   |   1.244
+JKm           |   1.690  |   1.825  |    845   |   1.022
+JHT           |   4.650  |   5.035  |  3.170   |   3.569
+Biaya Ops     |     —    |     —    |    845   |     930
+Surplus Total |   2.535  |   2.355  (−180 Miliar)
+Surplus Margin|   30,0%  |   25,8%  (−420 bps)</span>
+
+<span class="hl-task">TASK:
+1) Hitung variance per line item: nilai absolut + % perubahan
+2) Hitung rasio klaim terhadap iuran per program (Q1 dan Q2)
+   Identifikasi program mana yang rasionya memburuk paling signifikan
+3) Dekomposisi penurunan surplus 180 Miliar:
+   - Dampak dari kenaikan klaim per program (dalam Rp dan bps)
+   - Dampak dari kenaikan biaya operasional (dalam Rp dan bps)
+   - VERIFIKASI: Total semua dampak = −180 Miliar (tampilkan tabel)
+4) Klasifikasi tiap driver: one-off atau recurring? controllable atau external?
+5) 5 pertanyaan verifikasi untuk dicek ke tim (klaim, data, kebijakan)
+6) Executive summary 5 poin untuk Direktur Keuangan
+
+FORMAT: Tabel per langkah + rekonsiliasi + executive summary narasi</span>
+
+<span class="hl-constraint">CONSTRAINT:
+- Wajib tampilkan tabel rekonsiliasi — total driver harus = −420 bps
+- Jangan buat angka di luar data yang diberikan
+- Jika butuh data tambahan, minta — jangan asumsikan
+- Sebutkan semua asumsi secara eksplisit di akhir output</span></pre>
+    </div>
+
+    <div class="info-box danger">
+      🚨 <strong>Red flag output:</strong> Jika AI tidak menampilkan tabel rekonsiliasi dan hanya menulis narasi, <strong>prompt perlu dipertegas</strong> dengan menambahkan: "Wajib tampilkan tabel rekonsiliasi dalam format: Driver | Dampak (Rp M) | Dampak (bps) | TOTAL"
+    </div>
+
+  </div>
+
+  <!-- ===== TAB: PROMPT C ===== -->
+  <div id="tab-promptC" class="tab-section">
+
+    <div class="section-header">
+      <h2>Prompt C — Forecasting + 3 Skenario + Sensitivity</h2>
+      <p>Proyeksi iuran JHT semester 2 dengan asumsi transparan dan early warning indicators.</p>
+    </div>
+
+    <div class="info-box tip">
+      📋 <strong>Gunakan Tabel 2</strong> (Data Bulanan Iuran JHT Jan–Des 2024).
+    </div>
+
+    <div class="section-header"><h2 style="font-size:16px;">Langkah-langkah Praktik</h2></div>
+    <ol class="step-list">
+      <li><strong>Hitung CAGR manual:</strong> (5.145 / 4.580) ^ (1/11) − 1. Berapa hasilnya? Ini adalah anchor tren Anda sebelum tanya AI.</li>
+      <li><strong>Perhatikan anomali September:</strong> Data menunjukkan penurunan −0,7% di Sep 2024. Apakah ini seasonality atau one-off? Tuliskan hipotesis Anda.</li>
+      <li><strong>Jalankan prompt</strong> dan bandingkan angka tren AI dengan kalkulasi manual langkah 1.</li>
+      <li><strong>Verifikasi assumption sheet:</strong> Apakah AI menulis asumsi driver secara eksplisit (growth peserta, iuran per peserta)? Cek apakah asumsi masuk akal.</li>
+      <li><strong>Cek sensitivity:</strong> Apakah tabel sensitivity bisa di-trace ke formula? Variasi ±10% pada peserta harus terlihat proporsional.</li>
+    </ol>
+
+    <div class="prompt-box">
+      <div class="prompt-label">PROMPT C — Forecasting + Sensitivity</div>
+      <button class="copy-btn" onclick="copyPrompt('pC')">Copy</button>
+      <pre id="pC"><span class="hl-role">ROLE: FP&A Manager BPJSTK, menyiapkan proyeksi untuk rapat Direksi.</span>
+
+<span class="hl-data">DATA BULANAN IURAN JHT (IDR Miliar):
+Jan: 4.580 | Feb: 4.612 | Mar: 4.680 | Apr: 4.710
+Mei: 4.790 | Jun: 4.870 | Jul: 4.890 | Agu: 4.945
+Sep: 4.910 | Okt: 5.010 | Nov: 5.060 | Des: 5.145
+
+KONTEKS DRIVER:
+- Peserta aktif tumbuh rata-rata 0,5–0,8% per bulan
+- Iuran per peserta stabil (tidak ada kenaikan tarif)
+- Sep 2024 turun karena koreksi data administrasi (one-off)
+- Target manajemen: pertumbuhan peserta 7% per tahun</span>
+
+<span class="hl-task">TASK:
+1) Identifikasi pola dari data:
+   - Tren keseluruhan + CAGR 12 bulan
+   - Volatilitas MoM (rata-rata % perubahan absolut)
+   - Anomali: Sep 2024 — apakah perlu dikecualikan dari tren?
+
+2) Forecast Jan–Jun 2025 (6 bulan), 3 skenario:
+   - Base: tren historis berlanjut (eksklusikan outlier Sep)
+   - Bull: uplift +3% dari base (ekspansi kepesertaan baru)
+   - Bear: turun −5% dari base (perlambatan ekonomi/PHK)
+
+3) Untuk setiap skenario, tulis asumsi driver secara eksplisit:
+   - Growth peserta (% per bulan)
+   - Iuran rata-rata per peserta
+   - Faktor eksternal yang diasumsikan
+
+4) Sensitivity analysis:
+   Jika growth peserta hanya 50% dari asumsi base,
+   berapa dampaknya ke total iuran JHT semester 1 2025?
+
+5) 3 early warning indicators + threshold bulanan untuk dipantau
+
+FORMAT:
+- Tabel forecast per skenario (Jan–Jun 2025)
+- Assumption sheet terstruktur per skenario
+- Sensitivity table (dapat dicek manual)
+- Early warning indicators + threshold</span>
+
+<span class="hl-constraint">CONSTRAINT:
+- Jangan gunakan data eksternal; jika butuh, minta saya
+- Semua angka harus bisa ditelusuri ke data historis yang diberikan
+- Sebutkan confidence level per skenario (Tinggi/Menengah/Rendah)
+- Sebutkan batasan analisis ini secara eksplisit di akhir output
+- Wajib tampilkan formula atau metode perhitungan tren</span></pre>
+    </div>
+
+    <div class="info-box warn">
+      ⚠️ <strong>Cek kritis:</strong> Angka forecast Base harus lebih tinggi dari Desember (5.145) karena tren positif. Jika AI menghasilkan angka di bawah 5.000 untuk Januari 2025, ada masalah pada perhitungan tren — periksa apakah AI menggunakan Sep sebagai outlier.
+    </div>
+
+  </div>
+
+  <!-- ===== TAB: PROMPT E ===== -->
+  <div id="tab-promptE" class="tab-section">
+
+    <div class="section-header">
+      <h2>Prompt E — Red Flag Triage (Audit-Ready)</h2>
+      <p>Identifikasi anomali dari log transaksi operasional dan buat catatan audit yang defensible.</p>
+    </div>
+
+    <div class="info-box tip">
+      📋 <strong>Gunakan Tabel 3</strong> (Log Transaksi Operasional — sudah dianonimkan, aman untuk AI publik).
+    </div>
+
+    <div class="section-header"><h2 style="font-size:16px;">Langkah-langkah Praktik</h2></div>
+    <ol class="step-list">
+      <li><strong>Identifikasi manual dulu (5 menit):</strong> Tandai baris mana yang menurut Anda mencurigakan. Berikan alasan sebelum meminta AI.</li>
+      <li><strong>Hitung rata-rata amount</strong> dari 10 transaksi. Berapa transaksi yang di atas 2× rata-rata?</li>
+      <li><strong>Jalankan prompt</strong> dan bandingkan: apakah AI menemukan red flag yang sama dengan temuan manual Anda?</li>
+      <li><strong>Cek bahasa output:</strong> Apakah AI menggunakan kata "fraud" atau "terbukti"? Jika ya, ini pelanggaran constraint — output tidak bisa digunakan sebagai catatan audit.</li>
+      <li><strong>Verifikasi prioritas:</strong> TRX-005 (PT Cepat Kilat, Rp 890 juta, vendor baru) harus masuk prioritas Tinggi. Jika tidak ada, ulangi dengan menambahkan konteks threshold.</li>
+      <li><strong>Cek rekomendasi kontrol:</strong> Harus ada minimal 1 preventive dan 1 detective. Keduanya harus spesifik, bukan generik.</li>
+    </ol>
+
+    <div class="prompt-box">
+      <div class="prompt-label">PROMPT E — Red Flag Triage</div>
+      <button class="copy-btn" onclick="copyPrompt('pE')">Copy</button>
+      <pre id="pE"><span class="hl-role">ROLE: Internal Auditor berpengalaman, menyiapkan dokumen triage formal.</span>
+
+<span class="hl-data">DATA TRANSAKSI OPERASIONAL — JULI 2024 (IDR Juta, Data Anonimisasi):
+
+ID      | Tanggal | Vendor         | Kategori              | Amount | Catatan
+TRX-001 | 02/07   | CV Sejahtera   | Pengadaan ATK         | 48     | —
+TRX-002 | 05/07   | PT Maju Jaya   | Pemeliharaan Gedung   | 320    | —
+TRX-003 | 07/07   | CV Sejahtera   | Pengadaan ATK         | 47     | —
+TRX-004 | 10/07   | PT Teknologi ID| Lisensi Software      | 215    | —
+TRX-005 | 12/07   | PT Cepat Kilat | Konsultasi IT         | 890    | Vendor baru
+TRX-006 | 14/07   | PT Listrik Prima| Utilitas             | 125    | —
+TRX-007 | 15/07   | CV Solusi Cepat| Konsultasi Manajemen  | 148    | Urgent
+TRX-008 | 18/07   | CV Solusi Cepat| Konsultasi Manajemen  | 147    | —
+TRX-009 | 22/07   | PT Sarana Kantor| Sewa Peralatan       | 95     | —
+TRX-010 | 31/07   | PT Maju Jaya   | Pemeliharaan Gedung   | 318    | Akhir bulan
+
+KONTEKS: Threshold approval normal: >Rp 200 juta wajib 2 tandatangan.
+Rata-rata pembelian ATK per bulan historis: Rp 30–50 juta.</span>
+
+<span class="hl-task">TASK:
+1) Identifikasi semua red flags. Kategorikan:
+   duplikasi, amount tidak wajar, timing mencurigakan,
+   vendor baru, split invoice, pattern tidak biasa lainnya
+
+2) Skor prioritas per red flag:
+   - Tinggi: dampak besar DAN kemungkinan penyimpangan tinggi
+   - Sedang: dampak besar ATAU kemungkinan tinggi
+   - Rendah: dampak kecil DAN kemungkinan rendah
+
+3) Untuk setiap red flag (format tabel):
+   - Deskripsi temuan
+   - Tipe anomali
+   - Prioritas
+   - Dokumen yang perlu diminta
+   - Pihak yang perlu dikonfirmasi
+
+4) Rekomendasi kontrol:
+   - 2 kontrol preventive (mencegah terulang)
+   - 2 kontrol detective (mendeteksi lebih cepat)
+
+FORMAT: Tabel red flags + tabel rekomendasi kontrol</span>
+
+<span class="hl-constraint">CONSTRAINT:
+- Gunakan bahasa "indikasi" dan "perlu verifikasi" — BUKAN "terbukti" atau "fraud"
+- JANGAN menyebut nama pihak yang bertanggung jawab secara eksplisit
+- Output harus bisa digunakan sebagai catatan audit formal
+- Mulai hipotesis dari human error atau kesalahan sistem, bukan niat
+- Tandai [DATA REQUIRED] jika butuh data tambahan untuk konfirmasi</span></pre>
+    </div>
+
+    <div class="info-box danger">
+      🚨 <strong>Pelanggaran constraint yang harus dihindari:</strong> Jika AI menulis "vendor PT Cepat Kilat kemungkinan melakukan fraud" — output ini tidak dapat digunakan. Kata yang benar: "TRX-005 mengindikasikan perlu verifikasi dokumen kontrak dan dasar persetujuan vendor."
+    </div>
+
+  </div>
+
+  <!-- ===== TAB: QA CHECKLIST ===== -->
+  <div id="tab-qa" class="tab-section">
+
+    <div class="section-header">
+      <h2>QA Checklist — Verifikasi Output AI</h2>
+      <p>Jalankan checklist ini setiap kali selesai mendapatkan output AI. Checklist ini berlaku untuk semua prompt A, B, C, dan E.</p>
+    </div>
+
+    <div class="qa-score-bar">
+      <div>
+        <div class="score-val" id="score-val" style="color: var(--green-600)">0%</div>
+        <div class="score-label">Skor QA</div>
+      </div>
+      <div style="flex: 1;">
+        <div class="progress-wrap"><div class="progress-bar" id="prog-bar" style="width:0%"></div></div>
+        <div class="score-verdict" id="score-verdict" style="margin-top: 6px; color: var(--text-2); font-size: 13px;">Belum ada item yang dicek</div>
+      </div>
+    </div>
+
+    <!-- BAGIAN 1: KRITIS -->
+    <div class="qa-section">
+      <h4>🔴 Kritis — Output tidak bisa dipakai jika ini tidak terpenuhi</h4>
+
+      <div class="qa-item" onclick="toggleCheck(this)">
+        <input type="checkbox">
+        <label>Semua angka yang disebutkan AI bisa ditelusuri ke data input yang diberikan (tidak ada angka "karangan")</label>
+        <span class="severity sev-kritis">Kritis</span>
+      </div>
+      <div class="qa-item" onclick="toggleCheck(this)">
+        <input type="checkbox">
+        <label>Jika ada tabel rekonsiliasi (waterfall/bridge), total semua driver = selisih aktual (±0 toleransi)</label>
+        <span class="severity sev-kritis">Kritis</span>
+      </div>
+      <div class="qa-item" onclick="toggleCheck(this)">
+        <input type="checkbox">
+        <label>Output tidak mengandung kata "terbukti", "pasti", atau "fraud" tanpa bukti data — terutama di prompt E</label>
+        <span class="severity sev-kritis">Kritis</span>
+      </div>
+      <div class="qa-item" onclick="toggleCheck(this)">
+        <input type="checkbox">
+        <label>Minimal 3 angka kunci sudah dihitung ulang secara manual dan hasilnya cocok</label>
+        <span class="severity sev-kritis">Kritis</span>
+      </div>
+      <div class="qa-item" onclick="toggleCheck(this)">
+        <input type="checkbox">
+        <label>Output tidak mengandung data identitas peserta, nomor klaim individual, atau PII lainnya</label>
+        <span class="severity sev-kritis">Kritis</span>
+      </div>
+    </div>
+
+    <!-- BAGIAN 2: PENTING -->
+    <div class="qa-section">
+      <h4>🟡 Penting — Perlu diperbaiki sebelum digunakan untuk laporan</h4>
+
+      <div class="qa-item" onclick="toggleCheck(this)">
+        <input type="checkbox">
+        <label>AI menyebutkan asumsi secara eksplisit (bukan tersembunyi di tengah narasi)</label>
+        <span class="severity sev-penting">Penting</span>
+      </div>
+      <div class="qa-item" onclick="toggleCheck(this)">
+        <input type="checkbox">
+        <label>Narasi eksekutif konsisten dengan angka di tabel — tidak ada kontradiksi story vs data</label>
+        <span class="severity sev-penting">Penting</span>
+      </div>
+      <div class="qa-item" onclick="toggleCheck(this)">
+        <input type="checkbox">
+        <label>Issue tree atau dekomposisi sudah diuji MECE: tidak ada driver yang overlap antar node</label>
+        <span class="severity sev-penting">Penting</span>
+      </div>
+      <div class="qa-item" onclick="toggleCheck(this)">
+        <input type="checkbox">
+        <label>Forecast: angka base case lebih tinggi dari titik awal jika tren historis positif</label>
+        <span class="severity sev-penting">Penting</span>
+      </div>
+      <div class="qa-item" onclick="toggleCheck(this)">
+        <input type="checkbox">
+        <label>Driver diklasifikasikan sebagai one-off atau recurring — bukan hanya dideskripsikan</label>
+        <span class="severity sev-penting">Penting</span>
+      </div>
+      <div class="qa-item" onclick="toggleCheck(this)">
+        <input type="checkbox">
+        <label>Rekomendasi mengandung aksi spesifik + target + timeline + owner (bukan generik "tingkatkan efisiensi")</label>
+        <span class="severity sev-penting">Penting</span>
+      </div>
+      <div class="qa-item" onclick="toggleCheck(this)">
+        <input type="checkbox">
+        <label>AI menyebut keterbatasan analisis (data apa yang tidak tersedia, asumsi apa yang perlu divalidasi)</label>
+        <span class="severity sev-penting">Penting</span>
+      </div>
+    </div>
+
+    <!-- BAGIAN 3: BAIK -->
+    <div class="qa-section">
+      <h4>🟢 Baik — Output berkualitas tinggi jika ini terpenuhi</h4>
+
+      <div class="qa-item" onclick="toggleCheck(this)">
+        <input type="checkbox">
+        <label>Ada bagian "Data yang masih dibutuhkan" atau [DATA REQUIRED] untuk area yang tidak bisa dianalisis</label>
+        <span class="severity sev-baik">Baik</span>
+      </div>
+      <div class="qa-item" onclick="toggleCheck(this)">
+        <input type="checkbox">
+        <label>Sensitivity analysis menampilkan formula atau metode — bukan hanya angka hasil</label>
+        <span class="severity sev-baik">Baik</span>
+      </div>
+      <div class="qa-item" onclick="toggleCheck(this)">
+        <input type="checkbox">
+        <label>Early warning indicators memiliki threshold numerik yang spesifik (bukan hanya "pantau klaim")</label>
+        <span class="severity sev-baik">Baik</span>
+      </div>
+      <div class="qa-item" onclick="toggleCheck(this)">
+        <input type="checkbox">
+        <label>Red flag triage menggunakan bahasa audit-friendly: "indikasi", "perlu verifikasi", bukan tuduhan</label>
+        <span class="severity sev-baik">Baik</span>
+      </div>
+      <div class="qa-item" onclick="toggleCheck(this)">
+        <input type="checkbox">
+        <label>Output mencantumkan confidence level per klaim atau skenario (Tinggi/Menengah/Rendah)</label>
+        <span class="severity sev-baik">Baik</span>
+      </div>
+    </div>
+
+    <!-- Diagnosa -->
+    <div class="data-card" style="margin-top:1.5rem; background: var(--bg-3);">
+      <h3 style="margin-bottom:1rem;">🔍 Diagnosa: Jika Skor Rendah, Prompt Perlu Diperbaiki</h3>
+      <table>
+        <thead><tr><th>Gejala Output AI</th><th>Kemungkinan Penyebab</th><th>Perbaikan Prompt</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Angka tidak bisa diverifikasi ke input</td>
+            <td>Data tidak diberikan secara eksplisit</td>
+            <td>Tambahkan tabel data lengkap di bagian DATA</td>
+          </tr>
+          <tr>
+            <td>Rekonsiliasi tidak balance</td>
+            <td>AI tidak tahu wajib reconcile</td>
+            <td>Tambahkan: "Verifikasi: total semua driver = selisih aktual. Tampilkan tabel rekonsiliasi."</td>
+          </tr>
+          <tr>
+            <td>Output hanya narasi, tidak ada tabel</td>
+            <td>FORMAT tidak dispesifikkan</td>
+            <td>Tambahkan di TASK: "Sajikan dalam format tabel yang bisa disalin ke Excel"</td>
+          </tr>
+          <tr>
+            <td>AI menggunakan kata "fraud" atau "terbukti"</td>
+            <td>CONSTRAINT tidak cukup kuat</td>
+            <td>Tambahkan: "DILARANG menggunakan kata 'fraud', 'terbukti', atau tuduhan langsung"</td>
+          </tr>
+          <tr>
+            <td>Asumsi tidak disebutkan eksplisit</td>
+            <td>Tidak ada instruksi untuk menyebut asumsi</td>
+            <td>Tambahkan di TASK: "Di akhir, buat bagian ASUMSI yang digunakan dan KETERBATASAN"</td>
+          </tr>
+          <tr>
+            <td>Rekomendasi terlalu generik</td>
+            <td>Tidak ada format rekomendasi</td>
+            <td>Tambahkan: "Format rekomendasi: [Aksi] → [Target] → [Timeline] → [Owner]"</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+function showTab(name) {
+  document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function copyPrompt(id) {
+  const el = document.getElementById(id);
+  const text = el.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = el.parentElement.querySelector('.copy-btn');
+    btn.textContent = 'Copied ✓';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+function toggleCheck(row) {
+  const cb = row.querySelector('input[type=checkbox]');
+  cb.checked = !cb.checked;
+  updateScore();
+}
+
+function updateScore() {
+  const all = document.querySelectorAll('.qa-item input[type=checkbox]');
+  const checked = document.querySelectorAll('.qa-item input[type=checkbox]:checked');
+  const pct = Math.round((checked.length / all.length) * 100);
+  document.getElementById('score-val').textContent = pct + '%';
+  document.getElementById('prog-bar').style.width = pct + '%';
+  const bar = document.getElementById('prog-bar');
+  const verdict = document.getElementById('score-verdict');
+  if (pct >= 85) {
+    bar.style.background = 'var(--green-400)';
+    verdict.textContent = '✅ Output siap digunakan untuk laporan';
+    verdict.style.color = 'var(--green-600)';
+  } else if (pct >= 60) {
+    bar.style.background = 'var(--amber-200)';
+    verdict.textContent = '⚠️ Perlu perbaikan sebelum digunakan — cek item yang belum terpenuhi';
+    verdict.style.color = 'var(--amber-600)';
+  } else {
+    bar.style.background = 'var(--red-400)';
+    verdict.textContent = '🚨 Output belum dapat digunakan — prompt perlu diperbaiki';
+    verdict.style.color = 'var(--red-600)';
+  }
+}
+</script>
+</body>
+</html>
