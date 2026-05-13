@@ -272,65 +272,115 @@ correct: 1
 
 // ========== DAY 3: AI Strategy, Risk & Ethics (10 soal) ==========
 {
-day: 3,
-question: "Dalam konteks LLM, 'Parametric Knowledge' merujuk pada pengetahuan yang...",
-options: ["Diberikan user saat inference melalui prompt","Di-encode dalam parameter/weight model selama training","Diambil dari Google Search real-time","Disimpan di database eksternal melalui RAG"],
-correct: 1
-},
-{
-day: 3,
-question: "Enterprise Governance of AI menurut Gartner memerlukan mekanisme 'blended decision making'. Ini berarti...",
-options: ["Keputusan AI sepenuhnya dipegang CIO","Akuntabilitas terdistribusi melibatkan IT, Data & Analytics, dan Risk Governance","Hanya tim IT yang bertanggung jawab atas AI","Keputusan AI tidak perlu melibatkan manusia"],
-correct: 1
-},
-{
-day: 3,
-question: "Dalam NIST AI Risk Management Framework (AI RMF), fungsi 'Govern' berada di tengah siklus. Tiga fungsi lain yang mengelilinginya adalah...",
-options: ["Plan, Build, Deploy","Map, Measure, Manage","Define, Assess, Treat","Collect, Process, Validate"],
-correct: 1
-},
-{
-day: 3,
-question: "Prinsip ART (Accountability, Responsibility, Transparency) dalam Ethics in Design bertujuan untuk...",
-options: ["Membuat AI bekerja lebih cepat","Memastikan AI system bisa dijelaskan, diaudit, dan ada ownership jelas","Mengurangi biaya training model","Meningkatkan akurasi prediksi AI"],
-correct: 1
-},
-{
-day: 3,
-question: "Dalam AI fraud detection, teknik mana yang paling cocok untuk mengidentifikasi pola fraud yang sangat kompleks dan tersembunyi dalam high-dimensional data?",
-options: ["Rule-Based System","Logistic Regression","Deep Learning dengan Neural Networks","Manual Review"],
-correct: 2
-},
-{
-day: 3,
-question: "Seorang prompt engineer menulis: 'ROLE: Senior FP&A Analyst. KONTEKS: EBITDA margin turun 140 bps. DATA: [tabel lengkap]. TASK: [5 instruksi spesifik]. CONSTRAINT: Jangan buat angka di luar data.' Struktur prompt ini mencakup komponen...",
-options: ["Hanya Persona dan Task","Persona, Context, Task, dan Constraint","Hanya Context dan Format","Hanya Task dan Tone"],
-correct: 1
-},
-{
-day: 3,
-question: "Menurut maturity roadmap AI Adoption, fase mana yang mencakup 'Set enforcement processes' dan 'Pilot AI governance tooling'?",
-options: ["Planning","Experimenting","Stabilization","Scaling"],
-correct: 2
-},
-{
-day: 3,
-question: "Model ML untuk fraud detection menunjukkan akurasi tinggi di data training tetapi performa buruk di transaksi baru yang belum pernah dilihat. Masalah ini disebut...",
-options: ["Underfitting","Overfitting","Data Drift","Concept Drift"],
-correct: 1
-},
-{
-day: 3,
-question: "Dalam framework trustworthy AI, karakteristik mana yang menjadi fondasi bagi semua karakteristik lainnya (Valid & Reliable, Accountable & Transparent, dll.)?",
-options: ["Safe","Secure & Resilient","Valid & Reliable","Explainable & Interpretable"],
-correct: 2
-},
-{
-day: 3,
-question: "Survei Gartner menunjukkan sumber funding utama untuk AI initiatives di non-IT functions adalah...",
-options: ["CIO budget","CTO budget","Business unit or function budget","AI-specific budget"],
-correct: 2
-}
+    "day": 3,
+    "question": "Apa yang dimaksud dengan parametric knowledge dalam AI?",
+    "options": [
+      "Data yang diberikan saat inferensi",
+      "Pengetahuan yang tersimpan dalam model selama training",
+      "Data real-time dari API",
+      "Informasi dari user"
+    ],
+    "correct": 1
+  },
+  {
+    "day": 3,
+    "question": "Source knowledge digunakan oleh AI pada saat:",
+    "options": [
+      "Training model",
+      "Deployment sistem",
+      "Inferensi berdasarkan input user",
+      "Validasi data"
+    ],
+    "correct": 2
+  },
+  {
+    "day": 3,
+    "question": "Apa tujuan utama dari Enterprise Governance of AI?",
+    "options": [
+      "Mengurangi biaya IT",
+      "Mengontrol penggunaan AI secara bertanggung jawab",
+      "Menggantikan manusia",
+      "Meningkatkan kecepatan coding"
+    ],
+    "correct": 1
+  },
+  {
+    "day": 3,
+    "question": "Berikut ini yang termasuk prinsip Responsible AI (ART) adalah:",
+    "options": [
+      "Accuracy, Reliability, Testing",
+      "Accountability, Responsibility, Transparency",
+      "Automation, Risk, Technology",
+      "Analysis, Reporting, Tracking"
+    ],
+    "correct": 1
+  },
+  {
+    "day": 3,
+    "question": "Teknik AI yang paling umum digunakan dalam fraud detection adalah:",
+    "options": [
+      "Blockchain",
+      "Machine Learning dan Deep Learning",
+      "IoT",
+      "RPA"
+    ],
+    "correct": 1
+  },
+  {
+    "day": 3,
+    "question": "Salah satu keunggulan utama AI dalam fraud detection adalah:",
+    "options": [
+      "Menghilangkan semua risiko",
+      "Tidak membutuhkan data",
+      "Real-time monitoring",
+      "Tidak perlu maintenance"
+    ],
+    "correct": 2
+  },
+  {
+    "day": 3,
+    "question": "Apa fungsi utama anomaly detection dalam fraud detection?",
+    "options": [
+      "Menghapus data",
+      "Menyimpan data",
+      "Mengidentifikasi aktivitas tidak normal",
+      "Membuat laporan keuangan"
+    ],
+    "correct": 2
+  },
+  {
+    "day": 3,
+    "question": "Salah satu tantangan penggunaan AI dalam fraud detection adalah:",
+    "options": [
+      "Terlalu cepat",
+      "Tidak bisa digunakan di bank",
+      "Data quality yang buruk",
+      "Tidak membutuhkan biaya"
+    ],
+    "correct": 2
+  },
+  {
+    "day": 3,
+    "question": "Apa risiko dari overfitting pada model AI?",
+    "options": [
+      "Model terlalu umum",
+      "Model tidak bisa belajar",
+      "Model hanya cocok dengan data lama",
+      "Model terlalu cepat"
+    ],
+    "correct": 2
+  },
+  {
+    "day": 3,
+    "question": "Apa peran AI dalam fraud detection modern dibanding metode tradisional?",
+    "options": [
+      "Menggunakan lebih banyak aturan manual",
+      "Lebih lambat dalam analisis",
+      "Lebih adaptif terhadap pola baru",
+      "Tidak menggunakan data"
+    ],
+    "correct": 2
+  }
 ];
 
 // === SHUFFLE UTILITIES ===
